@@ -135,7 +135,7 @@ export default function Settings({ profile, setProfile, a11y, setA11y, onRestart
                 style={{ minWidth: 140 }}
               >
                 {LANGUAGES.map(l => (
-                  <option key={l.code} value={l.code}>{l.label} — {l.name}</option>
+                  <option key={l.code} value={l.code}>{l.label} · {l.name}</option>
                 ))}
               </select>
             }

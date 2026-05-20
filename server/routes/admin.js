@@ -39,7 +39,7 @@ router.get('/export', requireTeacher, (req, res) => {
   }, null, 2));
 });
 
-// Import (merges by primary key — existing rows are replaced).
+// merges by primary key; existing rows are replaced
 router.post('/import', requireTeacher, (req, res) => {
   const dump = req.body;
   if (!dump || typeof dump !== 'object') {

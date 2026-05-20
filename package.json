@@ -2,7 +2,7 @@
   "name": "offlinefirst",
   "version": "1.0.0",
   "private": true,
-  "description": "Offline-first educational platform — SDGs 4, 9, 10",
+  "description": "Offline-first educational platform. SDGs 4, 9, 10.",
   "scripts": {
     "install:all": "cd client && npm install && cd ../server && npm install",
     "build": "cd client && npm install --include=dev && npm run build && cd ../server && npm install --omit=dev",

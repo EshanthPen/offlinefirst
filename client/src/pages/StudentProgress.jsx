@@ -42,7 +42,7 @@ function BestScoresChart({ items, t }) {
               <span style={{ fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.title}</span>
             </div>
             <span style={{ fontSize: 13, fontWeight: 600, color: it.pct === 0 ? 'var(--ink-faint)' : 'var(--ink)' }}>
-              {it.pct ? `${it.pct}%` : '—'}
+              {it.pct ? `${it.pct}%` : '-'}
             </span>
           </div>
           <div style={{ height: 8, background: 'var(--rule)', borderRadius: 999, overflow: 'hidden' }}>

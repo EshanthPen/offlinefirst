@@ -101,7 +101,7 @@ const sampleLessons = [
       sections: [
         {
           type: 'text',
-          content: 'The water cycle is the continuous movement of water through Earth\'s systems. It has no beginning and no end — water is constantly being recycled between the ocean, atmosphere, and land.'
+          content: 'The water cycle is the continuous movement of water through Earth\'s systems. It has no beginning and no end. Water is constantly being recycled between the ocean, atmosphere, and land.'
         },
         {
           type: 'heading',
@@ -109,19 +109,19 @@ const sampleLessons = [
         },
         {
           type: 'text',
-          content: 'Stage 1 — Evaporation: The sun heats water in oceans, lakes, and rivers, turning it into water vapor that rises into the atmosphere. This is why puddles disappear after a sunny day.'
+          content: 'Stage 1, Evaporation: The sun heats water in oceans, lakes, and rivers, turning it into water vapor that rises into the atmosphere. This is why puddles disappear after a sunny day.'
         },
         {
           type: 'text',
-          content: 'Stage 2 — Condensation: As water vapor rises, it cools and condenses into tiny water droplets, forming clouds and fog.'
+          content: 'Stage 2, Condensation: As water vapor rises, it cools and condenses into tiny water droplets, forming clouds and fog.'
         },
         {
           type: 'text',
-          content: 'Stage 3 — Precipitation: When water droplets in clouds combine and become heavy enough, they fall as rain, snow, sleet, or hail.'
+          content: 'Stage 3, Precipitation: When water droplets in clouds combine and become heavy enough, they fall as rain, snow, sleet, or hail.'
         },
         {
           type: 'text',
-          content: 'Stage 4 — Collection: Water collects in oceans, lakes, rivers, and groundwater, and the cycle begins again.'
+          content: 'Stage 4, Collection: Water collects in oceans, lakes, rivers, and groundwater, and the cycle begins again.'
         },
         {
           type: 'example',
@@ -174,7 +174,7 @@ const sampleLessons = [
       sections: [
         {
           type: 'text',
-          content: 'The main idea of a text is the most important point the author is making. It is what the whole passage is about — not just one sentence or detail, but the central message.'
+          content: 'The main idea of a text is the most important point the author is making. It is what the whole passage is about. Not just one sentence or detail, but the central message.'
         },
         {
           type: 'heading',

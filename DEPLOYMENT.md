@@ -1,4 +1,4 @@
-# OfflineFirst — Deployment Guide
+# OfflineFirst: Deployment Guide
 
 Everything you need to ship OfflineFirst to the public internet.
 
@@ -23,7 +23,7 @@ The repo is set up to deploy as a **single Node service**: the Express server se
 
 ## 1. Smoke test the production build locally
 
-Always do this before pushing to a host — it catches 95% of deploy failures.
+Always do this before pushing to a host. It catches 95% of deploy failures.
 
 ```bash
 cd /Users/eshanthpenumatsa/offlinefirst
@@ -31,13 +31,13 @@ npm run build          # installs deps + builds client
 NODE_ENV=production npm start
 ```
 
-Open `http://localhost:3001` — you should see the student home page served by Express.
+Open `http://localhost:3001`. You should see the student home page served by Express.
 
 If that works, your deploy will work.
 
 ---
 
-## 2. Option A — Render (recommended, free tier)
+## 2. Option A: Render (recommended, free tier)
 
 **Why:** zero-config detection of `render.yaml`, free HTTPS, no credit card needed for the free plan.
 
@@ -50,7 +50,7 @@ If that works, your deploy will work.
 
 ### Free-tier caveats
 - The service **spins down after 15 min idle** (~30s cold start on first hit).
-- Free tier has **no persistent disk** — SQLite lives on ephemeral storage and resets when the dyno recycles. The server **re-seeds the 3 sample lessons automatically on cold start**, so the demo still works. Student scores from previous sessions will be lost.
+- Free tier has **no persistent disk**. SQLite lives on ephemeral storage and resets when the dyno recycles. The server **re-seeds the 3 sample lessons automatically on cold start**, so the demo still works. Student scores from previous sessions will be lost.
 - For a real classroom deployment, upgrade to a **Starter plan ($7/mo)** to keep the 1 GB disk declared in `render.yaml`. The data then survives across restarts.
 
 ### Custom domain
@@ -58,7 +58,7 @@ Settings → **Custom Domains** → add your domain → set the CNAME Render giv
 
 ---
 
-## 3. Option B — Railway
+## 3. Option B: Railway
 
 **Why:** great DX, $5/mo of free credit, persistent volumes work on free tier.
 
@@ -77,7 +77,7 @@ In the Railway dashboard:
 
 ---
 
-## 4. Option C — Fly.io (best for global edge + free persistent volumes)
+## 4. Option C: Fly.io (global edge + free persistent volumes)
 
 ```bash
 brew install flyctl
@@ -88,11 +88,11 @@ fly volumes create data --size 1 --region <your-region>
 fly deploy
 ```
 
-The included `Dockerfile` sets `DB_PATH=/data/offlinefirst.db` and declares `/data` as a volume mount — Fly handles the rest.
+The included `Dockerfile` sets `DB_PATH=/data/offlinefirst.db` and declares `/data` as a volume mount. Fly handles the rest.
 
 ---
 
-## 5. Option D — VPS (DigitalOcean / Hetzner / Linode)
+## 5. Option D: VPS (DigitalOcean / Hetzner / Linode)
 
 Use this when you want full control, a static IP, or self-hosted PeerJS signaling.
 
@@ -132,7 +132,7 @@ sudo certbot --nginx -d your.domain
 
 ---
 
-## 6. Option E — Docker (any container host)
+## 6. Option E: Docker (any container host)
 
 ```bash
 cd /Users/eshanthpenumatsa/offlinefirst
@@ -144,9 +144,9 @@ Deploy that image to any container platform: Google Cloud Run, AWS App Runner, A
 
 ---
 
-## 7. Split deploy (advanced) — Vercel frontend + Render backend
+## 7. Split deploy (advanced): Vercel frontend + Render backend
 
-Only do this if you want the frontend on a global CDN. Most users should skip — the single-deploy approach is simpler.
+Only do this if you want the frontend on a global CDN. Most users should skip; the single-deploy approach is simpler.
 
 1. **Render**: deploy just the `server/` directory as a Web Service. Build command `cd server && npm ci`. Start `node server/index.js`.
 2. **Vercel**: import the repo, set **Root Directory** to `client`. Add `VITE_API_URL=https://<your-render-url>` as an env var.
@@ -177,7 +177,7 @@ Then open `$HOST/` in a browser. You should:
 1. See the **Student Home** with 3 seeded lessons.
 2. See the **SYNCED** indicator in the top right (green dot).
 3. Be able to open a lesson, complete a quiz, and see your score on the Progress page.
-4. Toggle to **Teacher View** — Network Dashboard should list your device under "CONNECTED DEVICES" within 30 seconds.
+4. Toggle to **Teacher View**. Network Dashboard should list your device under "CONNECTED DEVICES" within 30 seconds.
 
 ---
 
@@ -188,7 +188,7 @@ The service worker only registers over HTTPS (or localhost). All the hosts above
 - The user can disconnect from the internet, reload, and continue working.
 - Scores save to IndexedDB and sync when connectivity returns.
 
-To verify after deploy: load the app, open DevTools → **Application → Service Workers**, confirm it's activated. Then DevTools → **Network → Offline**, reload — the app still loads.
+To verify after deploy: load the app, open DevTools → **Application → Service Workers**, confirm it's activated. Then DevTools → **Network → Offline**, reload. The app still loads.
 
 ---
 
@@ -247,11 +247,11 @@ For Render/Railway/Fly: their dashboards have file browsers or `exec` access int
 | File | Purpose |
 |---|---|
 | `package.json` (root) | `build` and `start` scripts the host calls |
-| `render.yaml` | Render Blueprint — auto-detected on import |
+| `render.yaml` | Render Blueprint, auto-detected on import |
 | `Dockerfile` | Multi-stage build for any container host |
 | `.dockerignore` | Keeps `node_modules` and DB out of the image |
 | `.env.example` | All supported environment variables |
 | `server/db.js` | Reads `DB_PATH` env var for the SQLite location |
 | `server/index.js` | Serves `client/dist/` when present (single-deploy mode) |
 
-You don't need to edit any of these for a basic deploy — the defaults work everywhere.
+You don't need to edit any of these for a basic deploy. The defaults work everywhere.

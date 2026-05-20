@@ -14,11 +14,8 @@ export default function TeacherPinModal({ onSuccess, onClose }) {
   useEffect(() => {
     fetchAuthStatus().then(s => {
       setAuthEnabled(!!s.authEnabled);
-      // If the server didn't actually set a PIN, just succeed silently —
-      // back-compat with deploys that don't enforce auth.
-      if (!s.authEnabled) {
-        submit(null);
-      }
+      // no PIN on server: just hand out a token
+      if (!s.authEnabled) submit(null);
     });
     setTimeout(() => inputRef.current?.focus(), 50);
   }, []);

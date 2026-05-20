@@ -42,7 +42,7 @@ export default function TeacherResults() {
     const doc = new jsPDF();
     doc.setFont('Helvetica', 'bold');
     doc.setFontSize(18);
-    doc.text('OfflineFirst — Quiz Results', 14, 18);
+    doc.text('OfflineFirst: Quiz Results', 14, 18);
     doc.setFont('Helvetica', 'normal');
     doc.setFontSize(10);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 26);
@@ -166,7 +166,7 @@ export default function TeacherResults() {
                       </div>
                     </td>
                     <td style={{ padding: '14px 16px', fontSize: 12, color: 'var(--ink-faint)' }}>
-                      {s.completed_at ? new Date(s.completed_at).toLocaleDateString() : '—'}
+                      {s.completed_at ? new Date(s.completed_at).toLocaleDateString() : '-'}
                     </td>
                   </tr>
                 );

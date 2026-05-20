@@ -32,7 +32,7 @@ const translations = {
     offline: 'Offline',
     allCaughtUpDetail: 'Every lesson and score is up to date.',
     syncingDetail: 'Exchanging content with nearby devices.',
-    localMeshDetail: 'Connected to nearby devices — no internet needed.',
+    localMeshDetail: 'Connected to nearby devices. No internet needed.',
     offlineDetail: 'No connectivity. Lessons available from the local cache.',
     peerSingular: 'peer',
     peerPlural: 'peers',
@@ -41,7 +41,7 @@ const translations = {
     pendingPlural: 'pending scores',
 
     // SDG badges
-    sdgList: ['SDG 4 — Quality Education', 'SDG 9 — Infrastructure', 'SDG 10 — Reduced Inequalities'],
+    sdgList: ['SDG 4: Quality Education', 'SDG 9: Infrastructure', 'SDG 10: Reduced Inequalities'],
 
     // Home page
     welcomeBack: 'Welcome back',
@@ -80,7 +80,7 @@ const translations = {
     readyForQuiz: 'Ready for the quiz?',
     retakeTheQuiz: 'Retake the quiz',
     quizPromptCount: 'short questions. You can take it again anytime.',
-    retakeBlurb: 'Try again to improve your score — it saves locally.',
+    retakeBlurb: 'Try again to improve your score. It saves locally.',
     startQuiz: 'Start quiz',
     retakeQuiz: 'Retake quiz',
 
@@ -119,11 +119,11 @@ const translations = {
 
     // Pair modal
     pairTitleSentence: 'Pair devices offline',
-    pairBlurb: 'Show this code to another device to share lessons over local WiFi — no internet needed.',
+    pairBlurb: 'Show this code to another device to share lessons over local WiFi. No internet needed.',
     yourDeviceId: 'Your device ID',
     scanAnotherDevice: 'Scan another device',
     add: 'Add',
-    pairedConfirm: 'Peer added — sync starting',
+    pairedConfirm: 'Peer added. Sync starting.',
 
     // Install dock
     installAppTitle: 'Install OfflineFirst',
@@ -167,7 +167,7 @@ const translations = {
     addText: 'Add text',
     addExample: 'Add example',
     addQuestion: 'Add question',
-    publishedLabel: 'Published — visible to students',
+    publishedLabel: 'Published (visible to students)',
     saveChanges: 'Save changes',
     create: 'Create',
     cancel: 'Cancel',
@@ -217,7 +217,7 @@ const translations = {
     dataAdmin: 'Data and backups',
     dataAdminSub: 'Export everything to a single JSON file, or restore from one. Requires the teacher PIN.',
     exportBackup: 'Export backup',
-    exportBackupSub: 'Lessons, scores, devices — saved as JSON.',
+    exportBackupSub: 'Lessons, scores, devices, all saved as JSON.',
     exportBtn: 'Export JSON',
     exportSaved: 'Backup downloaded.',
     exportFailed: 'Export failed.',
@@ -245,7 +245,7 @@ const translations = {
     onbFootNote: 'Everything you set up is stored on this device. No account needed.',
 
     onbWelcomeTitle: 'Education without internet.',
-    onbWelcomeSub: 'Lessons sync between devices over local WiFi — no signal required. Let’s get this device ready in about a minute.',
+    onbWelcomeSub: 'Lessons sync between devices over local WiFi. No signal required. Setup takes about a minute.',
     onbFeatMeshTitle: 'Local mesh',
     onbFeatMeshSub: 'Devices sync directly, peer to peer.',
     onbFeatOfflineTitle: 'Offline first',
@@ -274,7 +274,7 @@ const translations = {
     onbYourName: 'Your name',
     onbNamePhStudent: 'Aminata',
     onbNamePhTeacher: 'Mr. Okafor',
-    onbNameHint: 'Use a first name or a nickname — at least 2 characters.',
+    onbNameHint: 'Use a first name or nickname. At least 2 characters.',
 
     onbLangTitle: 'Pick your language',
     onbLangSub: 'The whole app, including lesson labels, switches with this.',
@@ -299,11 +299,11 @@ const translations = {
     gradesSeniorHint: 'Upper secondary',
 
     onbSubjectsTitle: 'What do you teach?',
-    onbSubjectsSub: 'Pick any number — you can adjust later.',
+    onbSubjectsSub: 'Pick any number. You can adjust later.',
     onbSelected: 'selected',
 
     onbPairStudentTitle: 'Pair with your teacher',
-    onbPairStudentSub: 'If a teacher device is nearby, you can sync lessons right away. Or skip — you can pair later.',
+    onbPairStudentSub: 'If a teacher device is nearby, you can sync lessons right away. Or skip and pair later.',
     onbPairOption1: 'Option 1',
     onbPairOption2: 'Option 2',
     onbScanTeacherTitle: "Scan a teacher's code",
@@ -323,7 +323,7 @@ const translations = {
     onbStudentPaired: '1 student paired',
 
     onbDoneTitle: "You're all set, {name}.",
-    onbDoneStudentSub: 'Your lessons are cached and ready to learn from — online or offline.',
+    onbDoneStudentSub: 'Your lessons are cached and ready to learn from, online or offline.',
     onbDoneTeacherSub: 'Your console is ready. You can start authoring lessons or share with students from the dashboard.',
     onbSummaryRole: 'Role',
     onbSummaryName: 'Name',
@@ -338,7 +338,7 @@ const translations = {
     onbRestartSub: 'Walk through the onboarding flow again.',
 
     onbSchoolTitle: 'Where do you learn?',
-    onbSchoolSub: 'Optional — just so the app feels like yours. Lessons stay on this device either way.',
+    onbSchoolSub: 'Optional. Just so the app feels like yours. Lessons stay on this device either way.',
     onbSchoolLockedSub: 'This device is registered to a specific school.',
     onbSchoolLabel: 'School or learning group',
     onbSchoolPh: 'Ada Academy',
@@ -378,7 +378,7 @@ const translations = {
     offline: 'Sin conexión',
     allCaughtUpDetail: 'Todas las lecciones y puntuaciones están actualizadas.',
     syncingDetail: 'Intercambiando contenido con dispositivos cercanos.',
-    localMeshDetail: 'Conectado a dispositivos cercanos — sin internet.',
+    localMeshDetail: 'Conectado a dispositivos cercanos. Sin internet.',
     offlineDetail: 'Sin conectividad. Lecciones disponibles desde la caché local.',
     peerSingular: 'par',
     peerPlural: 'pares',
@@ -386,7 +386,7 @@ const translations = {
     pendingSingular: 'puntuación pendiente',
     pendingPlural: 'puntuaciones pendientes',
 
-    sdgList: ['ODS 4 — Educación de Calidad', 'ODS 9 — Infraestructura', 'ODS 10 — Reducción de Desigualdades'],
+    sdgList: ['ODS 4: Educación de Calidad', 'ODS 9: Infraestructura', 'ODS 10: Reducción de Desigualdades'],
 
     welcomeBack: 'Bienvenido de nuevo',
     greeting: 'Buenas tardes',
@@ -422,7 +422,7 @@ const translations = {
     readyForQuiz: '¿Listo para el examen?',
     retakeTheQuiz: 'Repetir el examen',
     quizPromptCount: 'preguntas cortas. Puedes intentarlo de nuevo.',
-    retakeBlurb: 'Inténtalo de nuevo para mejorar — se guarda localmente.',
+    retakeBlurb: 'Inténtalo de nuevo para mejorar. Se guarda localmente.',
     startQuiz: 'Comenzar',
     retakeQuiz: 'Repetir',
 
@@ -458,11 +458,11 @@ const translations = {
     startALesson: 'Comienza una lección',
 
     pairTitleSentence: 'Emparejar dispositivos sin conexión',
-    pairBlurb: 'Muestra este código a otro dispositivo para compartir lecciones por WiFi local — sin internet.',
+    pairBlurb: 'Muestra este código a otro dispositivo para compartir lecciones por WiFi local. Sin internet.',
     yourDeviceId: 'ID del dispositivo',
     scanAnotherDevice: 'Escanear otro dispositivo',
     add: 'Añadir',
-    pairedConfirm: 'Par añadido — sincronizando',
+    pairedConfirm: 'Par añadido. Sincronizando.',
 
     installAppTitle: 'Instalar OfflineFirst',
     installAppSub: 'Úsala como una app nativa, sin conexión.',
@@ -502,7 +502,7 @@ const translations = {
     addText: 'Añadir texto',
     addExample: 'Añadir ejemplo',
     addQuestion: 'Añadir pregunta',
-    publishedLabel: 'Publicado — visible para estudiantes',
+    publishedLabel: 'Publicado (visible para estudiantes)',
     saveChanges: 'Guardar cambios',
     create: 'Crear',
     cancel: 'Cancelar',
@@ -577,7 +577,7 @@ const translations = {
     offline: 'Hors ligne',
     allCaughtUpDetail: 'Toutes les leçons et notes sont à jour.',
     syncingDetail: 'Échange de contenu avec les appareils voisins.',
-    localMeshDetail: 'Connecté aux appareils voisins — sans internet.',
+    localMeshDetail: 'Connecté aux appareils voisins. Sans internet.',
     offlineDetail: 'Pas de connectivité. Leçons disponibles en cache.',
     peerSingular: 'pair',
     peerPlural: 'pairs',
@@ -585,7 +585,7 @@ const translations = {
     pendingSingular: 'note en attente',
     pendingPlural: 'notes en attente',
 
-    sdgList: ['ODD 4 — Éducation de Qualité', 'ODD 9 — Infrastructure', 'ODD 10 — Réduction des Inégalités'],
+    sdgList: ['ODD 4 : Éducation de Qualité', 'ODD 9 : Infrastructure', 'ODD 10 : Réduction des Inégalités'],
 
     welcomeBack: 'Bon retour',
     greeting: 'Bon après-midi',
@@ -621,7 +621,7 @@ const translations = {
     readyForQuiz: 'Prêt pour le quiz ?',
     retakeTheQuiz: 'Refaire le quiz',
     quizPromptCount: 'questions courtes. Tu peux réessayer.',
-    retakeBlurb: 'Réessaie pour améliorer ta note — enregistrée localement.',
+    retakeBlurb: 'Réessaie pour améliorer ta note. Enregistrée localement.',
     startQuiz: 'Commencer',
     retakeQuiz: 'Refaire',
 
@@ -657,11 +657,11 @@ const translations = {
     startALesson: 'Commence une leçon',
 
     pairTitleSentence: 'Apparier des appareils hors ligne',
-    pairBlurb: 'Montre ce code à un autre appareil pour partager les leçons en WiFi local — sans internet.',
+    pairBlurb: 'Montre ce code à un autre appareil pour partager les leçons en WiFi local. Sans internet.',
     yourDeviceId: 'ID de l’appareil',
     scanAnotherDevice: 'Scanner un appareil',
     add: 'Ajouter',
-    pairedConfirm: 'Pair ajouté — synchronisation',
+    pairedConfirm: 'Pair ajouté. Synchronisation.',
 
     installAppTitle: 'Installer OfflineFirst',
     installAppSub: 'Utilise-la comme une appli native, hors ligne.',
@@ -701,7 +701,7 @@ const translations = {
     addText: 'Ajouter texte',
     addExample: 'Ajouter exemple',
     addQuestion: 'Ajouter question',
-    publishedLabel: 'Publié — visible aux élèves',
+    publishedLabel: 'Publié (visible aux élèves)',
     saveChanges: 'Enregistrer',
     create: 'Créer',
     cancel: 'Annuler',
@@ -776,7 +776,7 @@ const translations = {
     offline: 'Nje ya mtandao',
     allCaughtUpDetail: 'Kila somo na alama zimesasishwa.',
     syncingDetail: 'Inabadilishana maudhui na vifaa vya karibu.',
-    localMeshDetail: 'Imeunganishwa na vifaa vya karibu — bila intaneti.',
+    localMeshDetail: 'Imeunganishwa na vifaa vya karibu. Bila intaneti.',
     offlineDetail: 'Hakuna mtandao. Masomo yapo kwenye kashe ya ndani.',
     peerSingular: 'mwenza',
     peerPlural: 'wenza',
@@ -784,7 +784,7 @@ const translations = {
     pendingSingular: 'alama inasubiri',
     pendingPlural: 'alama zinasubiri',
 
-    sdgList: ['SDG 4 — Elimu Bora', 'SDG 9 — Miundombinu', 'SDG 10 — Kupunguza Tofauti'],
+    sdgList: ['SDG 4: Elimu Bora', 'SDG 9: Miundombinu', 'SDG 10: Kupunguza Tofauti'],
 
     welcomeBack: 'Karibu tena',
     greeting: 'Habari za mchana',
@@ -820,7 +820,7 @@ const translations = {
     readyForQuiz: 'Uko tayari kwa jaribio?',
     retakeTheQuiz: 'Rudia jaribio',
     quizPromptCount: 'maswali mafupi. Unaweza kujaribu tena.',
-    retakeBlurb: 'Jaribu tena kuboresha alama — inahifadhiwa ndani.',
+    retakeBlurb: 'Jaribu tena kuboresha alama. Inahifadhiwa ndani.',
     startQuiz: 'Anza jaribio',
     retakeQuiz: 'Rudia',
 
@@ -856,11 +856,11 @@ const translations = {
     startALesson: 'Anza somo',
 
     pairTitleSentence: 'Oanisha vifaa bila mtandao',
-    pairBlurb: 'Onyesha msimbo huu kwa kifaa kingine kushiriki masomo kupitia WiFi ya ndani — bila mtandao.',
+    pairBlurb: 'Onyesha msimbo huu kwa kifaa kingine kushiriki masomo kupitia WiFi ya ndani. Bila mtandao.',
     yourDeviceId: 'ID ya kifaa',
     scanAnotherDevice: 'Scan kifaa kingine',
     add: 'Ongeza',
-    pairedConfirm: 'Mwenza ameongezwa — inasync',
+    pairedConfirm: 'Mwenza ameongezwa. Inasync.',
 
     installAppTitle: 'Sakinisha OfflineFirst',
     installAppSub: 'Itumie kama programu ya kawaida, bila mtandao.',
@@ -900,7 +900,7 @@ const translations = {
     addText: 'Ongeza maandiko',
     addExample: 'Ongeza mfano',
     addQuestion: 'Ongeza swali',
-    publishedLabel: 'Imechapishwa — inaonekana kwa wanafunzi',
+    publishedLabel: 'Imechapishwa (inaonekana kwa wanafunzi)',
     saveChanges: 'Hifadhi',
     create: 'Unda',
     cancel: 'Ghairi',

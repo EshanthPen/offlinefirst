@@ -44,9 +44,7 @@ seedDB();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// --- CORS allowlist via env var ---------------------------------------
-// ALLOWED_ORIGINS = comma-separated list of allowed origins.
-// If unset, allow all origins (back-compat).
+// ALLOWED_ORIGINS: comma-separated list; empty = allow all
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map(s => s.trim())
@@ -66,9 +64,7 @@ const corsOptions = allowedOrigins.length > 0
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 
-// --- Lightweight rate limiter for score sync --------------------------
-// Prevents a malicious peer from spamming hundreds of fake scores.
-// 60 sync calls / minute / IP is plenty for legitimate use.
+// 60 score-sync posts per minute per IP
 const SYNC_WINDOW_MS = 60_000;
 const SYNC_MAX = 60;
 const syncHits = new Map(); // ip -> array of timestamps
@@ -104,7 +100,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Lightweight school metadata — used by onboarding to prefill.
+// returned to onboarding so per-school deploys can prefill
 app.get('/api/school', (req, res) => {
   res.json({
     name: process.env.SCHOOL_NAME || null,
@@ -148,7 +144,7 @@ app.listen(PORT, () => {
   if (AUTH_ENABLED) {
     console.log('Teacher auth: ENABLED (TEACHER_PIN required for /admin and lesson writes)');
   } else {
-    console.warn('Teacher auth: DISABLED (no TEACHER_PIN env var set — anyone can edit lessons).');
+    console.warn('Teacher auth: DISABLED (no TEACHER_PIN env var set, anyone can edit lessons).');
     console.warn('  Set TEACHER_PIN in production to lock down the Teacher view.');
   }
   if (allowedOrigins.length > 0) {

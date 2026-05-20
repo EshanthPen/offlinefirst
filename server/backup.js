@@ -3,7 +3,6 @@ const path = require('path');
 const crypto = require('crypto');
 const db = require('./db');
 
-// ─── Backup builder ──────────────────────────────────────────
 function buildBackup() {
   const safeParse = (v) => {
     if (v == null) return null;
@@ -42,7 +41,6 @@ function buildBackup() {
   };
 }
 
-// ─── Local backup ────────────────────────────────────────────
 async function writeLocalBackup(dir) {
   await fs.promises.mkdir(dir, { recursive: true });
   const dump = buildBackup();
@@ -65,8 +63,7 @@ async function pruneOldBackups(dir, keep) {
   } catch {}
 }
 
-// ─── S3-compatible upload (Cloudflare R2, AWS S3, Backblaze B2) ─
-// Minimal SigV4 implementation — no aws-sdk dep. ~80 lines.
+// hand-rolled SigV4, avoids pulling in aws-sdk
 async function uploadToS3(bucket, key, body, cfg) {
   const { endpoint, region, accessKey, secretKey } = cfg;
   const host = new URL(endpoint).host;
@@ -115,7 +112,6 @@ async function uploadToS3(bucket, key, body, cfg) {
   return { url, etag: res.headers.get('etag') };
 }
 
-// ─── Orchestrator ────────────────────────────────────────────
 async function runBackupCycle() {
   const localDir = process.env.BACKUP_DIR || path.join(path.dirname(process.env.DB_PATH || './'), 'backups');
 
@@ -141,9 +137,7 @@ async function runBackupCycle() {
   }
 }
 
-// ─── Schedule ────────────────────────────────────────────────
-// Set BACKUP_INTERVAL_HOURS=24 (default) or any positive number to enable.
-// Set BACKUP_INTERVAL_HOURS=0 to disable.
+// BACKUP_INTERVAL_HOURS: default 24, set to 0 to disable
 function startScheduledBackups() {
   const hours = parseFloat(process.env.BACKUP_INTERVAL_HOURS ?? '24');
   if (!hours || hours <= 0) {
@@ -151,8 +145,8 @@ function startScheduledBackups() {
     return;
   }
   const ms = hours * 60 * 60 * 1000;
-  // First backup 60s after boot, then every interval
-  setTimeout(runBackupCycle, 60_000);
+  setTimeout(runBackupCycle, 60_000); // first run 60s after boot
+
   setInterval(runBackupCycle, ms);
   const { S3_BUCKET } = process.env;
   console.log(`[backup] scheduled every ${hours}h ${S3_BUCKET ? '(local + S3 upload)' : '(local only)'}`);

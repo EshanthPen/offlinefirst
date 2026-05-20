@@ -1,5 +1,4 @@
-/* OfflineFirst — design tokens (v3, Notion-leaning)
- * Light is default, dark via data-theme="dark" on <html>. */
+/* tokens + base styles. dark via data-theme="dark" on <html>. */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -110,7 +109,7 @@
               rgba(0, 0, 0, 0.4) 0 15px 40px;
 }
 
-/* Accessibility — large-text toggle */
+/* large-text toggle */
 :root[data-a11y="large"] { font-size: 18px; }
 :root[data-a11y="large"] body { font-size: 18px; }
 
@@ -526,9 +525,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   text-transform: uppercase; letter-spacing: 0.04em;
 }
 
-/* ──────────────────────────────────────────────────────
-   Onboarding
-   ────────────────────────────────────────────────────── */
+/* onboarding */
 .onb-root {
   min-height: 100vh; width: 100%;
   background:

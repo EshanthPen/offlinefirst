@@ -79,8 +79,6 @@ function SummaryRow({ icon, label, value }) {
   );
 }
 
-// ── Steps ─────────────────────────────────────────────────────
-
 function StepWelcome({ t }) {
   return (
     <div className="onb-step">
@@ -437,8 +435,6 @@ function StepDone({ role, name, school, lang, a11y, grade, subjects, paired, t }
     </div>
   );
 }
-
-// ── Main onboarding ───────────────────────────────────────────
 
 export default function Onboarding({ onComplete, initialLang = 'en' }) {
   const { t, setLang: setI18nLang } = useT();
