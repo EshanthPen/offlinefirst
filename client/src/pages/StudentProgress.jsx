@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllLessons, getAllScores } from '../db';
 import Icon from '../components/Icon';
 import { metaForLesson } from '../data/lmsData';
+import { useAppData } from '../data/AppData';
 
 function Stat({ label, value }) {
   return (
@@ -15,15 +15,7 @@ function Stat({ label, value }) {
 
 export default function StudentProgress() {
   const navigate = useNavigate();
-  const [lessons, setLessons] = useState([]);
-  const [scores, setScores] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      setLessons(await getAllLessons());
-      setScores(await getAllScores());
-    })();
-  }, []);
+  const { lessons, scores } = useAppData();
 
   const bestByLesson = useMemo(() => scores.reduce((acc, s) => {
     const pct = (s.score / s.total) * 100;
@@ -72,7 +64,7 @@ export default function StudentProgress() {
                 <span className="lms-course-pip" style={{ background: meta.letterColor }}>{l.subject[0]}</span>
                 <span>
                   <span style={{ display: 'block', fontWeight: 500 }}>{l.title}</span>
-                  <span className="lms-list-row-muted">{l.subject} · {meta.section || l.grade_level}</span>
+                  <span className="lms-list-row-muted">{l.subject} · {l.grade_level}</span>
                 </span>
               </span>
               <span style={{ width: 220 }} className="lms-list-row-muted">

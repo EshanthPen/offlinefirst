@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon, { BrandMark } from '../components/Icon';
+import { fetchAuthStatus, submitTeacherPin } from '../auth';
 
 const GRADE_LEVELS = [
   { id: 'g1-3',   label: 'Grades 1–3',  hint: 'Early primary' },
@@ -18,36 +19,22 @@ function SignIn({ onContinue }) {
         <span className="lms-auth-brand-name">OfflineFirst</span>
       </div>
       <div className="lms-auth-card">
-        <h1 className="lms-auth-title">Sign in to continue</h1>
-        <p className="lms-auth-sub">Use your school account, or continue on this device without signing in.</p>
-
-        <button type="button" className="lms-auth-sso">
-          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-            <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.49h4.84a4.14 4.14 0 0 1-1.79 2.71v2.26h2.9c1.7-1.56 2.69-3.87 2.69-6.62z" />
-            <path fill="#34A853" d="M9 18c2.43 0 4.46-.8 5.95-2.18l-2.9-2.26c-.81.54-1.83.86-3.05.86a5.27 5.27 0 0 1-4.95-3.64H1.05v2.32A8.99 8.99 0 0 0 9 18z" />
-            <path fill="#FBBC05" d="M4.05 10.78a5.3 5.3 0 0 1 0-3.56V4.9H1.05a8.99 8.99 0 0 0 0 8.2l3-2.32z" />
-            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.34l2.58-2.58A8.99 8.99 0 0 0 9 0 8.99 8.99 0 0 0 1.05 4.9l3 2.32A5.27 5.27 0 0 1 9 3.58z" />
-          </svg>
-          <span>Continue with school Google account</span>
-        </button>
-        <button type="button" className="lms-auth-sso outline">
-          <Icon name="user" size={16} color="#5F6368" />
-          <span>Use a class join code</span>
-        </button>
-
-        <div className="lms-auth-divider"><span>or</span></div>
+        <h1 className="lms-auth-title">Welcome</h1>
+        <p className="lms-auth-sub">
+          Set up this device in about a minute. Everything stays local. No account needed.
+        </p>
 
         <button
           type="button"
           className="lms-pill-btn solid lg"
-          style={{ width: '100%', justifyContent: 'center' }}
+          style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}
           onClick={onContinue}
         >
-          Continue without signing in
+          Get started <Icon name="arrow-right" size={16} />
         </button>
 
         <div className="lms-auth-foot">
-          Everything is stored on this device. No account required.
+          Lessons sync between nearby devices over local WiFi.
         </div>
       </div>
     </div>
@@ -60,14 +47,25 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
   const [name, setName] = useState('');
   const [grade, setGrade] = useState(null);
   const [subjects, setSubjects] = useState([]);
+  const [pin, setPin] = useState('');
+  const [pinErr, setPinErr] = useState('');
+  const [authEnabled, setAuthEnabled] = useState(false);
 
+  useEffect(() => { fetchAuthStatus().then(s => setAuthEnabled(!!s.authEnabled)); }, []);
+
+  const needsPin = role === 'teacher' && authEnabled;
   const total = 3;
   const next = () => setStep(s => Math.min(total - 1, s + 1));
   const back = () => step === 0 ? onBack && onBack() : setStep(s => s - 1);
 
   const canAdvance = () => {
     if (step === 0) return !!role;
-    if (step === 1) return name.trim().length >= 2 && (role === 'teacher' ? subjects.length > 0 : !!grade);
+    if (step === 1) {
+      const base = name.trim().length >= 2 && (role === 'teacher' ? subjects.length > 0 : !!grade);
+      if (!base) return false;
+      if (needsPin) return pin.length >= 4;
+      return true;
+    }
     return true;
   };
 
@@ -81,6 +79,19 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
       a11y: false,
       onboardedAt: new Date().toISOString()
     });
+  };
+
+  // Validate PIN on continue from step 1 if teacher role + auth on
+  const onContinue = async () => {
+    if (step === 1 && needsPin) {
+      setPinErr('');
+      const res = await submitTeacherPin(pin);
+      if (!res.ok) {
+        setPinErr(res.reason === 'incorrect_pin' ? 'Incorrect PIN. Try again.' : 'Sign-in failed.');
+        return;
+      }
+    }
+    next();
   };
 
   return (
@@ -184,6 +195,27 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
                     </button>
                   ))}
                 </div>
+
+                {needsPin && (
+                  <>
+                    <label className="lms-field-label" style={{ marginTop: 20 }}>Teacher PIN</label>
+                    <input
+                      className="lms-text-field"
+                      type="password"
+                      inputMode="numeric"
+                      placeholder="••••••"
+                      value={pin}
+                      onChange={e => { setPin(e.target.value); setPinErr(''); }}
+                      style={{ maxWidth: 200, letterSpacing: '0.2em', textAlign: 'center' }}
+                    />
+                    {pinErr && (
+                      <div style={{ marginTop: 8, color: 'var(--lms-bad)', fontSize: 13 }}>{pinErr}</div>
+                    )}
+                    <div style={{ marginTop: 6, fontSize: 12, color: 'var(--lms-ink-faint)' }}>
+                      Set by the administrator of this OfflineFirst server.
+                    </div>
+                  </>
+                )}
               </>
             )}
           </>
@@ -234,7 +266,7 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
           )}
           <span style={{ flex: 1 }} />
           {step < total - 1 && (
-            <button type="button" className="lms-pill-btn solid" disabled={!canAdvance()} onClick={next}>
+            <button type="button" className="lms-pill-btn solid" disabled={!canAdvance()} onClick={onContinue}>
               Continue <Icon name="arrow-right" size={16} />
             </button>
           )}

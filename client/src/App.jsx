@@ -1,11 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getProfile, saveProfile, seedFromStaticIfEmpty, clearProfile, getAllLessons } from './db';
+import { getProfile, saveProfile, seedFromStaticIfEmpty, clearProfile, getAllLessons, getAllScores, getAllQuizzes } from './db';
 import { startAutoSync } from './sync';
 import { clearToken } from './auth';
 import { sampleLessons } from './data/sampleLessons';
 import { I18nProvider, useT } from './i18n';
 import { ThemeProvider } from './theme';
+import { AppDataProvider } from './data/AppData';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import LanguageModal from './components/LanguageModal';
@@ -28,12 +29,19 @@ import Onboarding from './pages/Onboarding';
 
 const A11Y_KEY = 'offlinefirst_a11y';
 
-function Shell({ profile, setProfile, a11y, setA11y, onRestartOnboarding, lessons }) {
+function Shell({ profile, setProfile, a11y, setA11y, onRestartOnboarding, lessons, scores }) {
   const [navCollapsed, setNavCollapsed] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [pairOpen, setPairOpen] = useState(false);
   const { setLang } = useT();
   const isTeacher = profile?.role === 'teacher';
+
+  // count of quizzes the student hasn't taken yet
+  const todoBadge = (() => {
+    if (isTeacher) return 0;
+    const taken = new Set(scores.map(s => s.lesson_id));
+    return lessons.filter(l => l.quiz?.questions?.length && !taken.has(l.id)).length;
+  })();
 
   return (
     <>
@@ -44,7 +52,7 @@ function Shell({ profile, setProfile, a11y, setA11y, onRestartOnboarding, lesson
         onOpenPair={() => setPairOpen(true)}
       />
       <div className={`lms-app${navCollapsed ? ' nav-collapsed' : ''}`}>
-        <Sidebar role={profile?.role} courses={lessons} collapsed={navCollapsed} />
+        <Sidebar role={profile?.role} courses={lessons} collapsed={navCollapsed} todoBadge={todoBadge} />
         <div className="lms-main">
           <div className="lms-content">
             <Routes>
@@ -121,22 +129,40 @@ function AppContent() {
   const { setLang } = useT();
   const [profile, setProfile] = useState(null);
   const [lessons, setLessons] = useState([]);
+  const [scores, setScores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [a11y, setA11y] = useState(() => localStorage.getItem(A11Y_KEY) === '1');
 
+  const refreshData = async () => {
+    const [rawLessons, quizzes, s] = await Promise.all([getAllLessons(), getAllQuizzes(), getAllScores()]);
+    // enrich each lesson with its quiz so UI code can just read l.quiz
+    const quizByLesson = new Map(quizzes.map(q => [q.lesson_id, q]));
+    const enriched = rawLessons.map(l => {
+      const q = quizByLesson.get(l.id);
+      return q ? { ...l, quiz: q } : l;
+    });
+    setLessons(enriched);
+    setScores(s);
+  };
+
   useEffect(() => {
     let interval = null;
+    let scoreInterval = null;
     (async () => {
       const p = await getProfile();
       setProfile(p);
       await seedFromStaticIfEmpty(sampleLessons);
-      setLessons(await getAllLessons());
+      await refreshData();
       setLoading(false);
-      interval = startAutoSync(async () => {
-        setLessons(await getAllLessons());
-      });
+      // sync also refreshes data when new content arrives
+      interval = startAutoSync(refreshData);
+      // local scores can change between syncs (quiz completion), so poll lightly
+      scoreInterval = setInterval(refreshData, 5000);
     })();
-    return () => { if (interval) clearInterval(interval); };
+    return () => {
+      if (interval) clearInterval(interval);
+      if (scoreInterval) clearInterval(scoreInterval);
+    };
   }, []);
 
   useEffect(() => {
@@ -190,14 +216,17 @@ function AppContent() {
 
   return (
     <BrowserRouter>
-      <Shell
-        profile={profile}
-        setProfile={setProfile}
-        a11y={a11y}
-        setA11y={setA11y}
-        onRestartOnboarding={restartOnboarding}
-        lessons={lessons}
-      />
+      <AppDataProvider value={{ lessons, scores, refresh: refreshData }}>
+        <Shell
+          profile={profile}
+          setProfile={setProfile}
+          a11y={a11y}
+          setA11y={setA11y}
+          onRestartOnboarding={restartOnboarding}
+          lessons={lessons}
+          scores={scores}
+        />
+      </AppDataProvider>
     </BrowserRouter>
   );
 }

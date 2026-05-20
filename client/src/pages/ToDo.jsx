@@ -1,23 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllLessons, getAllScores } from '../db';
 import Icon from '../components/Icon';
 import FileGlyph from '../components/FileGlyph';
 import EmptyState from '../components/EmptyState';
 import { buildTodo } from '../data/lmsData';
+import { useAppData } from '../data/AppData';
 
 export default function ToDoPage() {
   const navigate = useNavigate();
-  const [lessons, setLessons] = useState([]);
-  const [scores, setScores] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      setLessons(await getAllLessons());
-      setScores(await getAllScores());
-    })();
-  }, []);
-
+  const { lessons, scores } = useAppData();
   const todo = useMemo(() => buildTodo(lessons, scores), [lessons, scores]);
   const all = [
     ...todo.overdue.map(x => ({ ...x, status: 'overdue' })),

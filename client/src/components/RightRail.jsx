@@ -82,25 +82,22 @@ export function UpcomingCard({ events }) {
         <button type="button" className="lms-link" onClick={() => navigate('/calendar')}>Calendar</button>
       </div>
       {events.length === 0 && <div className="lms-rail-empty">Nothing scheduled.</div>}
-      {events.map((day, i) => {
-        const dayNum = day.date.match(/\d+/)?.[0] || '·';
-        return (
-          <div key={i} className="lms-event-day">
-            <div className="lms-event-day-label">{day.date}</div>
-            {day.items.map((it, j) => (
-              <div key={j} className="lms-event-item">
-                <span className={`lms-event-pip ${it.kind || 'event'}`}>
-                  <span className="lms-event-pip-day">{dayNum}</span>
-                </span>
-                <div style={{ minWidth: 0 }}>
-                  <div className="lms-event-title">{it.label}</div>
-                  {it.sub && <div className="lms-event-sub">{it.sub}</div>}
-                </div>
+      {events.map((day, i) => (
+        <div key={i} className="lms-event-day">
+          <div className="lms-event-day-label">{day.date}</div>
+          {day.items.map((it, j) => (
+            <div key={j} className="lms-event-item">
+              <span className={`lms-event-pip ${it.kind || 'event'}`}>
+                <Icon name="file-quiz" size={14} />
+              </span>
+              <div style={{ minWidth: 0 }}>
+                <div className="lms-event-title">{it.label}</div>
+                {it.sub && <div className="lms-event-sub">{it.sub}</div>}
               </div>
-            ))}
-          </div>
-        );
-      })}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

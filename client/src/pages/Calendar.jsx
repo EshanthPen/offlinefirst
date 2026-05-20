@@ -1,20 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import { getAllLessons, getAllScores } from '../db';
+import { useMemo } from 'react';
 import FileGlyph from '../components/FileGlyph';
 import EmptyState from '../components/EmptyState';
 import { buildEvents } from '../data/lmsData';
+import { useAppData } from '../data/AppData';
 
 export default function CalendarPage() {
-  const [lessons, setLessons] = useState([]);
-  const [scores, setScores] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      setLessons(await getAllLessons());
-      setScores(await getAllScores());
-    })();
-  }, []);
-
+  const { lessons, scores } = useAppData();
   const events = useMemo(() => buildEvents(lessons, scores), [lessons, scores]);
 
   return (

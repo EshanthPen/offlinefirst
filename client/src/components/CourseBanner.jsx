@@ -1,5 +1,4 @@
 import Icon from './Icon';
-import Avatar from './Avatar';
 import { metaForLesson } from '../data/lmsData';
 
 export default function CourseBanner({ course, onPrimary, primaryLabel = 'Open lesson' }) {
@@ -16,17 +15,8 @@ export default function CourseBanner({ course, onPrimary, primaryLabel = 'Open l
         ))}
       </div>
       <div className="lms-banner-inner">
-        <div className="lms-banner-eyebrow">{meta.section || course.grade_level}</div>
+        <div className="lms-banner-eyebrow">{course.subject} · {course.grade_level}</div>
         <h1 className="lms-banner-title">{course.title || course.subject}</h1>
-        <div className="lms-banner-instructor">
-          <Avatar
-            name={meta.instructor}
-            initial={meta.instructorInitial}
-            color="rgba(255,255,255,0.22)"
-            size={28}
-          />
-          <span>{meta.instructor}</span>
-        </div>
         {onPrimary && (
           <button type="button" className="lms-pill-btn light" onClick={onPrimary} style={{ marginTop: 16 }}>
             <Icon name="book" size={16} /> {primaryLabel}

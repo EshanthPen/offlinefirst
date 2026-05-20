@@ -96,9 +96,6 @@ export default function Topbar({ profile, onToggleNav, onOpenLang, onOpenPair })
       >
         <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={18} />
       </button>
-      <button className="lms-iconbtn" type="button" title="Notifications">
-        <Icon name="bell" size={18} />
-      </button>
       <button className="lms-avatar-btn" type="button" onClick={() => navigate('/settings')} title={profile?.studentName}>
         <Avatar name={profile?.studentName} size={32} />
       </button>

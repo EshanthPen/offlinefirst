@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllLessons, getAllScores, getProfile } from '../db';
 import Tabs from '../components/Tabs';
 import ActivityPost from '../components/ActivityPost';
 import EmptyState from '../components/EmptyState';
 import Icon from '../components/Icon';
 import FileGlyph from '../components/FileGlyph';
 import CourseCard from '../components/CourseCard';
-import { AssistantCard, ToDoCard, UpcomingCard, RecentlyCompletedCard } from '../components/RightRail';
-import { buildPosts, buildTodo, buildEvents, buildRecent, metaForLesson } from '../data/lmsData';
+import { ToDoCard, UpcomingCard, RecentlyCompletedCard } from '../components/RightRail';
+import { buildPosts, buildTodo, buildEvents, buildRecent } from '../data/lmsData';
+import { useAppData } from '../data/AppData';
 
 function AssignmentList({ todo }) {
   const navigate = useNavigate();
@@ -74,19 +74,8 @@ function InlineEnrolled({ lessons, scores }) {
 
 export default function StudentHome() {
   const [tab, setTab] = useState('activity');
-  const [lessons, setLessons] = useState([]);
-  const [scores, setScores] = useState([]);
-  const [profile, setProfile] = useState({ studentName: 'Student' });
   const [recentExpanded, setRecentExpanded] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const [l, s, p] = await Promise.all([getAllLessons(), getAllScores(), getProfile()]);
-      setLessons(l);
-      setScores(s);
-      setProfile(p);
-    })();
-  }, []);
+  const { lessons, scores } = useAppData();
 
   const posts = useMemo(() => buildPosts(lessons), [lessons]);
   const todo = useMemo(() => buildTodo(lessons, scores), [lessons, scores]);
@@ -127,7 +116,6 @@ export default function StudentHome() {
           {tab === 'assigned' && <AssignmentList todo={todo} />}
         </div>
         <aside className="lms-side-col">
-          <AssistantCard />
           <ToDoCard todo={todo} onOpenAll={() => setTab('assigned')} />
           <UpcomingCard events={events} />
           <RecentlyCompletedCard items={recent} expanded={recentExpanded} onExpand={() => setRecentExpanded(true)} />

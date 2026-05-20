@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getLessonById, getAllScores } from '../db';
+import { getLessonById, getAllScores, getQuizByLessonId } from '../db';
 import Tabs from '../components/Tabs';
 import CourseBanner from '../components/CourseBanner';
 import ActivityPost from '../components/ActivityPost';
 import MaterialRow from '../components/MaterialRow';
 import FileGlyph from '../components/FileGlyph';
 import EmptyState from '../components/EmptyState';
-import Avatar from '../components/Avatar';
-import Icon from '../components/Icon';
-import { buildPosts, buildTodo, buildPeople } from '../data/lmsData';
+import { buildPosts, buildTodo } from '../data/lmsData';
 
 function Classwork({ course }) {
   const items = [
@@ -36,37 +34,6 @@ function Classwork({ course }) {
       <div style={{ padding: '6px 0 12px' }}>
         {items.map((item, i) => <MaterialRow key={i} item={item} />)}
       </div>
-    </div>
-  );
-}
-
-function People({ people }) {
-  return (
-    <div className="lms-people">
-      <section className="lms-people-section">
-        <div className="lms-people-section-head">
-          <h2 className="lms-people-heading">Teachers</h2>
-        </div>
-        <div className="lms-people-row">
-          <Avatar name={people.teacher.name} initial={people.teacher.initial} color={people.teacher.color} size={36} />
-          <span className="lms-people-name">{people.teacher.name}</span>
-          <button type="button" className="lms-iconbtn small" style={{ marginLeft: 'auto' }} title="Email">
-            <Icon name="mail" size={18} />
-          </button>
-        </div>
-      </section>
-      <section className="lms-people-section">
-        <div className="lms-people-section-head">
-          <h2 className="lms-people-heading">Classmates</h2>
-          <span className="lms-people-count">{people.classmates.length} students</span>
-        </div>
-        {people.classmates.map((s, i) => (
-          <div key={i} className="lms-people-row">
-            <Avatar name={s.name} initial={s.initial} size={36} />
-            <span className="lms-people-name">{s.name}</span>
-          </div>
-        ))}
-      </section>
     </div>
   );
 }
@@ -123,14 +90,17 @@ export default function CourseDetail() {
 
   useEffect(() => {
     (async () => {
-      setCourse(await getLessonById(id));
-      setScores(await getAllScores());
+      const [l, q, s] = await Promise.all([getLessonById(id), getQuizByLessonId(id), getAllScores()]);
+      setCourse(l ? (q ? { ...l, quiz: q } : l) : null);
+      setScores(s);
     })();
   }, [id]);
 
-  const courseTodo = useMemo(() => course ? buildTodo([course], scores) : { overdue: [], upcoming: [] }, [course, scores]);
+  const courseTodo = useMemo(
+    () => course ? buildTodo([course], scores) : { overdue: [], upcoming: [] },
+    [course, scores]
+  );
   const coursePosts = useMemo(() => course ? buildPosts([course]) : [], [course]);
-  const people = useMemo(() => buildPeople(course), [course]);
 
   if (!course) return <div style={{ padding: 24, color: 'var(--lms-ink-muted)' }}>Loading…</div>;
 
@@ -143,7 +113,6 @@ export default function CourseDetail() {
         tabs={[
           { id: 'stream',    label: 'Stream' },
           { id: 'classwork', label: 'Classwork' },
-          { id: 'people',    label: 'People' },
           { id: 'grades',    label: 'Grades' }
         ]}
       />
@@ -187,7 +156,6 @@ export default function CourseDetail() {
       )}
 
       {tab === 'classwork' && <Classwork course={course} />}
-      {tab === 'people'    && <People people={people} />}
       {tab === 'grades'    && <CourseGrades course={course} scores={scores} />}
     </div>
   );

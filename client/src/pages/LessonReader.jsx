@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getLessonById, getAllScores } from '../db';
+import { getLessonById, getAllScores, getQuizByLessonId } from '../db';
 import Icon from '../components/Icon';
 import FileGlyph from '../components/FileGlyph';
 import { metaForLesson } from '../data/lmsData';
@@ -14,9 +14,8 @@ export default function LessonReader() {
 
   useEffect(() => {
     (async () => {
-      const l = await getLessonById(id);
-      setLesson(l);
-      const scores = await getAllScores();
+      const [l, q, scores] = await Promise.all([getLessonById(id), getQuizByLessonId(id), getAllScores()]);
+      setLesson(l ? (q ? { ...l, quiz: q } : l) : null);
       setCompleted(!!scores.find(s => s.lesson_id === id));
     })();
     return () => { if (window.speechSynthesis) window.speechSynthesis.cancel(); };

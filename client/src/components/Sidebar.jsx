@@ -80,7 +80,7 @@ export default function Sidebar({ collapsed, role, courses = [], todoBadge = 0 }
                 {!collapsed && (
                   <div className="lms-course-meta">
                     <div className="lms-course-name">{c.subject}</div>
-                    <div className="lms-course-sub">{meta.section || c.grade_level}</div>
+                    <div className="lms-course-sub">{c.grade_level}</div>
                   </div>
                 )}
               </NavLink>

@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
-import Avatar from './Avatar';
 import FileGlyph from './FileGlyph';
 
 export default function ActivityPost({ post }) {
@@ -8,18 +7,22 @@ export default function ActivityPost({ post }) {
   return (
     <article className="lms-post">
       <div className="lms-post-head">
-        <Avatar name={post.author} initial={post.author_initial} color={post.author_color} size={40} />
+        <span
+          className="lms-course-pip"
+          style={{ background: post.author_color || 'var(--lms-primary)', width: 36, height: 36, fontSize: 14 }}
+        >
+          {post.course_name?.[0] || '•'}
+        </span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="lms-post-author">{post.author}</div>
+          <button
+            type="button"
+            className="lms-link"
+            onClick={() => post.course_id && navigate(`/course/${post.course_id}`)}
+            style={{ fontWeight: 500, fontSize: 14 }}
+          >
+            {post.course_name}
+          </button>
           <div className="lms-post-meta">
-            <button
-              type="button"
-              className="lms-link"
-              onClick={() => post.course_id && navigate(`/course/${post.course_id}`)}
-            >
-              {post.course_name}
-            </button>
-            <span className="lms-dot">·</span>
             <span>{post.time}</span>
           </div>
         </div>

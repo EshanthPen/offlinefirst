@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
-import Avatar from './Avatar';
 import { metaForLesson } from '../data/lmsData';
 
 export default function CourseCard({ course, completion }) {
@@ -19,15 +18,8 @@ export default function CourseCard({ course, completion }) {
     >
       <div className="lms-course-card-head" style={{ background: meta.bannerColor || '#1967D2' }}>
         <div className="lms-course-card-title">{course.title || course.subject}</div>
-        <div className="lms-course-card-sub">{meta.section || course.grade_level}</div>
-        <div className="lms-course-card-instructor">{meta.instructor}</div>
-        <Avatar
-          name={meta.instructor}
-          initial={meta.instructorInitial}
-          color="white"
-          size={42}
-          style={{ position: 'absolute', right: 16, bottom: -21, color: meta.bannerColor }}
-        />
+        <div className="lms-course-card-sub">{course.subject}</div>
+        <div className="lms-course-card-instructor">{course.grade_level}</div>
       </div>
       <div className="lms-course-card-body">
         <div className="lms-course-card-due">
