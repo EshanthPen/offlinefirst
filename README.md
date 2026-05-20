@@ -47,6 +47,24 @@ NODE_ENV=production npm start
 ```
 See [DEPLOYMENT.md](DEPLOYMENT.md) for Render / Railway / Fly.io / Docker / VPS step-by-step.
 
+## Production hardening
+
+Out of the box, OfflineFirst is **fully open** — anyone can flip to Teacher view and edit lessons. To lock down a real deployment, set these env vars on your host:
+
+| Var | What it does |
+|---|---|
+| `TEACHER_PIN` | 4–10 digit PIN. Teacher view + lesson writes + backup/restore all require it. |
+| `AUTH_SECRET` | 32+ random hex bytes. Signs the teacher session token. Persist across deploys to keep sessions alive. Generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. |
+| `ALLOWED_ORIGINS` | Comma-separated list, e.g. `https://offlinefirst.org`. Locks CORS to your domain. |
+
+When `TEACHER_PIN` is set:
+- The role-switch button opens a PIN modal instead of flipping freely
+- `POST/PUT/DELETE /api/lessons` returns 401 without a teacher token
+- `GET /api/admin/export` and `POST /api/admin/import` require teacher auth
+- Score sync rate-limits at 60 calls/min/IP to prevent spam
+
+Manual backup any time via **Settings → Data and backups → Export JSON** (downloads everything as a single file). Restore via Import.
+
 ## SDG Alignment
 - **SDG 4**: Delivers structured curriculum (lessons + quizzes) to zero-connectivity environments
 - **SDG 9**: Mesh sync layer creates resilient educational infrastructure from existing consumer devices

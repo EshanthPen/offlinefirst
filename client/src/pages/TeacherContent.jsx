@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Papa from 'papaparse';
 import Icon from '../components/Icon';
 import { triggerSync } from '../sync';
+import { authedFetch } from '../auth';
 import { useT } from '../i18n';
 
 const SUBJECTS = ['Mathematics', 'Science', 'Literacy', 'History', 'Geography', 'Health'];
@@ -66,7 +67,7 @@ export default function TeacherContent() {
     try {
       const url = editing ? `/api/lessons/${editing}` : '/api/lessons';
       const method = editing ? 'PUT' : 'POST';
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draft) });
+      const res = await authedFetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(draft) });
       if (res.ok) {
         setMsg(editing ? t('lessonSaved') : t('lessonCreated'));
         await load();
@@ -87,7 +88,7 @@ export default function TeacherContent() {
     if (!confirm(t('deleteConfirm'))) return;
     setBusy(true);
     try {
-      const res = await fetch(`/api/lessons/${id}`, { method: 'DELETE' });
+      const res = await authedFetch(`/api/lessons/${id}`, { method: 'DELETE' });
       if (res.ok) { setMsg(t('lessonDeleted')); await load(); }
     } finally {
       setBusy(false);
@@ -126,7 +127,7 @@ export default function TeacherContent() {
       let n = 0;
       for (const l of imported) {
         if (!l?.title) continue;
-        const res = await fetch('/api/lessons', {
+        const res = await authedFetch('/api/lessons', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

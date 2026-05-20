@@ -19,6 +19,7 @@ import StudentProgress from './pages/StudentProgress';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherContent from './pages/TeacherContent';
 import TeacherResults from './pages/TeacherResults';
+import Settings from './pages/Settings';
 
 const A11Y_KEY = 'offlinefirst_a11y';
 
@@ -38,6 +39,9 @@ function LessonTitleWatcher({ setLessonTitle }) {
 }
 
 function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent }) {
+  const settingsRoute = (
+    <Route path="/settings" element={<Settings profile={profile} setProfile={setProfile} a11y={a11y} setA11y={setA11y} />} />
+  );
   const [pairOpen, setPairOpen] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
   const [sync, setSync] = useState(getSyncState());
@@ -82,6 +86,7 @@ function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent }
                 <Route path="/" element={<TeacherDashboard />} />
                 <Route path="/content" element={<TeacherContent />} />
                 <Route path="/results" element={<TeacherResults />} />
+                {settingsRoute}
                 <Route path="*" element={<Navigate to="/" />} />
               </>
             ) : (
@@ -91,6 +96,7 @@ function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent }
                 <Route path="/lesson/:id" element={<LessonReader />} />
                 <Route path="/quiz/:id" element={<QuizPage />} />
                 <Route path="/progress" element={<StudentProgress />} />
+                {settingsRoute}
                 <Route path="*" element={<Navigate to="/" />} />
               </>
             )}
