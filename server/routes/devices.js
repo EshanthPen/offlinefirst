@@ -7,6 +7,20 @@ router.get('/', (req, res) => {
   res.json(devices);
 });
 
+// list of recently-active device IDs (last 5 min), excluding the caller.
+// clients call this to auto-discover peers without manual pairing.
+router.get('/peers', (req, res) => {
+  const self = req.query.self || '';
+  const rows = db.prepare(`
+    SELECT id, name, role, last_seen FROM devices
+    WHERE last_seen > datetime('now', '-5 minutes')
+      AND id != ?
+    ORDER BY last_seen DESC
+    LIMIT 50
+  `).all(self);
+  res.json({ peers: rows });
+});
+
 router.post('/heartbeat', (req, res) => {
   const { id, name, role, lessonVersions } = req.body;
 
@@ -26,7 +40,14 @@ router.post('/heartbeat', (req, res) => {
       role=excluded.role
   `).run(id, name || null, role || 'student', versionsStr);
 
-  res.json({ success: true });
+  // also return active peers so heartbeat doubles as a discovery call.
+  const peers = db.prepare(`
+    SELECT id, name, role FROM devices
+    WHERE last_seen > datetime('now', '-5 minutes') AND id != ?
+    ORDER BY last_seen DESC LIMIT 50
+  `).all(id);
+
+  res.json({ success: true, peers });
 });
 
 module.exports = router;
