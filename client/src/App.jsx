@@ -1,22 +1,25 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { getProfile, saveProfile, seedFromStaticIfEmpty, getLessonById, clearProfile } from './db';
-import { startAutoSync, getSyncState, onSyncStateChange } from './sync';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getProfile, saveProfile, seedFromStaticIfEmpty, clearProfile, getAllLessons } from './db';
+import { startAutoSync } from './sync';
 import { clearToken } from './auth';
 import { sampleLessons } from './data/sampleLessons';
 import { I18nProvider, useT } from './i18n';
 import { ThemeProvider } from './theme';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import SyncCard from './components/SyncCard';
-import NewContentBanner from './components/NewContentBanner';
+import LanguageModal from './components/LanguageModal';
 import PairDevice from './components/PairDevice';
 import InstallPrompt from './components/InstallPrompt';
 import StudentHome from './pages/StudentHome';
 import Courses from './pages/Courses';
+import CourseDetail from './pages/CourseDetail';
 import LessonReader from './pages/LessonReader';
 import QuizPage from './pages/QuizPage';
 import StudentProgress from './pages/StudentProgress';
+import CalendarPage from './pages/Calendar';
+import ToDoPage from './pages/ToDo';
+import Archived from './pages/Archived';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherContent from './pages/TeacherContent';
 import TeacherResults from './pages/TeacherResults';
@@ -25,128 +28,114 @@ import Onboarding from './pages/Onboarding';
 
 const A11Y_KEY = 'offlinefirst_a11y';
 
-function LessonTitleWatcher({ setLessonTitle }) {
-  const location = useLocation();
-  useEffect(() => {
-    const m = location.pathname.match(/^\/(?:lesson|quiz)\/(.+)$/);
-    if (!m) { setLessonTitle(null); return; }
-    let cancelled = false;
-    (async () => {
-      const l = await getLessonById(m[1]);
-      if (!cancelled) setLessonTitle(l?.title || null);
-    })();
-    return () => { cancelled = true; };
-  }, [location.pathname, setLessonTitle]);
-  return null;
-}
-
-function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent, onRestartOnboarding }) {
+function Shell({ profile, setProfile, a11y, setA11y, onRestartOnboarding, lessons }) {
+  const [navCollapsed, setNavCollapsed] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const [pairOpen, setPairOpen] = useState(false);
-  const [syncOpen, setSyncOpen] = useState(false);
-  const [sync, setSync] = useState(getSyncState());
-  const [lessonTitle, setLessonTitle] = useState(null);
-
-  useEffect(() => onSyncStateChange(setSync), []);
-
+  const { setLang } = useT();
   const isTeacher = profile?.role === 'teacher';
 
-  const settingsRoute = (
-    <Route
-      path="/settings"
-      element={
-        <Settings
-          profile={profile}
-          setProfile={setProfile}
-          a11y={a11y}
-          setA11y={setA11y}
-          onRestartOnboarding={onRestartOnboarding}
-        />
-      }
-    />
-  );
-
   return (
-    <div className="app">
-      <Sidebar profile={profile} setProfile={setProfile} />
-      <div className="app-main">
-        <Topbar
-          isTeacher={isTeacher}
-          lessonTitle={lessonTitle}
-          a11y={a11y}
-          onToggleA11y={() => setA11y(a => !a)}
-          onOpenPair={() => setPairOpen(true)}
-          onSyncChipClick={() => setSyncOpen(o => !o)}
-          newContent={newContent}
-          onDismissNewContent={() => setNewContent(0)}
-        />
-        <div className="app-content">
-          <LessonTitleWatcher setLessonTitle={setLessonTitle} />
-          {syncOpen && (
-            <div style={{ marginBottom: 'var(--s-6)' }}>
-              <SyncCard
-                status={sync.status}
-                peers={sync.connectedPeers?.length || 0}
-                pending={sync.pendingScores || 0}
-                onClose={() => setSyncOpen(false)}
-              />
-            </div>
-          )}
-          {newContent > 0 && (
-            <NewContentBanner count={newContent} onDismiss={() => setNewContent(0)} />
-          )}
-          <Routes>
-            {isTeacher ? (
-              <>
-                <Route path="/" element={<TeacherDashboard />} />
-                <Route path="/content" element={<TeacherContent />} />
-                <Route path="/results" element={<TeacherResults />} />
-                {settingsRoute}
-                <Route path="*" element={<Navigate to="/" />} />
-              </>
-            ) : (
-              <>
-                <Route path="/" element={<StudentHome />} />
-                <Route path="/courses" element={<Courses />} />
-                <Route path="/lesson/:id" element={<LessonReader />} />
-                <Route path="/quiz/:id" element={<QuizPage />} />
-                <Route path="/progress" element={<StudentProgress />} />
-                {settingsRoute}
-                <Route path="*" element={<Navigate to="/" />} />
-              </>
-            )}
-          </Routes>
+    <>
+      <Topbar
+        profile={profile}
+        onToggleNav={() => setNavCollapsed(c => !c)}
+        onOpenLang={() => setLangOpen(true)}
+        onOpenPair={() => setPairOpen(true)}
+      />
+      <div className={`lms-app${navCollapsed ? ' nav-collapsed' : ''}`}>
+        <Sidebar role={profile?.role} courses={lessons} collapsed={navCollapsed} />
+        <div className="lms-main">
+          <div className="lms-content">
+            <Routes>
+              {isTeacher ? (
+                <>
+                  <Route path="/" element={<TeacherDashboard />} />
+                  <Route path="/content" element={<TeacherContent />} />
+                  <Route path="/results" element={<TeacherResults />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
+                  <Route path="/archived" element={<Archived />} />
+                  <Route path="/course/:id" element={<CourseDetail />} />
+                  <Route path="/lesson/:id" element={<LessonReader />} />
+                  <Route path="/quiz/:id" element={<QuizPage />} />
+                  <Route
+                    path="/settings"
+                    element={
+                      <Settings
+                        profile={profile}
+                        setProfile={setProfile}
+                        a11y={a11y}
+                        setA11y={setA11y}
+                        onRestartOnboarding={onRestartOnboarding}
+                        onOpenLang={() => setLangOpen(true)}
+                      />
+                    }
+                  />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </>
+              ) : (
+                <>
+                  <Route path="/" element={<StudentHome />} />
+                  <Route path="/courses" element={<Courses />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
+                  <Route path="/todo" element={<ToDoPage />} />
+                  <Route path="/progress" element={<StudentProgress />} />
+                  <Route path="/archived" element={<Archived />} />
+                  <Route path="/course/:id" element={<CourseDetail />} />
+                  <Route path="/lesson/:id" element={<LessonReader />} />
+                  <Route path="/quiz/:id" element={<QuizPage />} />
+                  <Route
+                    path="/settings"
+                    element={
+                      <Settings
+                        profile={profile}
+                        setProfile={setProfile}
+                        a11y={a11y}
+                        setA11y={setA11y}
+                        onRestartOnboarding={onRestartOnboarding}
+                        onOpenLang={() => setLangOpen(true)}
+                      />
+                    }
+                  />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </>
+              )}
+            </Routes>
+          </div>
         </div>
       </div>
-
+      {langOpen && (
+        <LanguageModal
+          lang={localStorage.getItem('offlinefirst_lang') || 'en'}
+          onPick={(c) => { setLang(c); setLangOpen(false); }}
+          onClose={() => setLangOpen(false)}
+        />
+      )}
       {pairOpen && <PairDevice onClose={() => setPairOpen(false)} />}
       <InstallPrompt />
-    </div>
+    </>
   );
 }
 
 function AppContent() {
-  const { t, setLang } = useT();
+  const { setLang } = useT();
   const [profile, setProfile] = useState(null);
+  const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [newContent, setNewContent] = useState(0);
   const [a11y, setA11y] = useState(() => localStorage.getItem(A11Y_KEY) === '1');
 
   useEffect(() => {
     let interval = null;
-    const init = async () => {
+    (async () => {
       const p = await getProfile();
       setProfile(p);
       await seedFromStaticIfEmpty(sampleLessons);
+      setLessons(await getAllLessons());
       setLoading(false);
-
-      interval = startAutoSync((count) => {
-        if (count > 0) {
-          setNewContent(c => c + count);
-          setTimeout(() => setNewContent(0), 12000);
-        }
+      interval = startAutoSync(async () => {
+        setLessons(await getAllLessons());
       });
-    };
-    init();
+    })();
     return () => { if (interval) clearInterval(interval); };
   }, []);
 
@@ -157,14 +146,8 @@ function AppContent() {
 
   const completeOnboarding = async (payload) => {
     const next = payload || {
-      role: 'student',
-      studentName: 'Student',
-      lang: 'en',
-      a11y: false,
-      grade: 'g4-6',
-      subjects: [],
-      paired: false,
-      onboardedAt: new Date().toISOString()
+      role: 'student', studentName: 'Student', lang: 'en', a11y: false,
+      grade: 'g4-6', subjects: [], onboardedAt: new Date().toISOString()
     };
     const studentId = profile?.studentId
       || 'student_' + Math.random().toString(36).substring(2, 11);
@@ -176,9 +159,8 @@ function AppContent() {
       subjects: next.subjects || [],
       lang: next.lang || 'en',
       a11y: !!next.a11y,
-      paired: !!next.paired,
-      onboardedAt: next.onboardedAt,
-      school: next.school || null
+      paired: false,
+      onboardedAt: next.onboardedAt
     });
     setProfile({ ...next, studentId });
     if (next.lang) setLang(next.lang);
@@ -195,10 +177,9 @@ function AppContent() {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100vh', color: 'var(--ink-muted)',
-        fontSize: 14
+        height: '100vh', color: 'var(--lms-ink-muted)', fontSize: 14
       }}>
-        {t('initializing')}
+        Loading…
       </div>
     );
   }
@@ -214,9 +195,8 @@ function AppContent() {
         setProfile={setProfile}
         a11y={a11y}
         setA11y={setA11y}
-        newContent={newContent}
-        setNewContent={setNewContent}
         onRestartOnboarding={restartOnboarding}
+        lessons={lessons}
       />
     </BrowserRouter>
   );

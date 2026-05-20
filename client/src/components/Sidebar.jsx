@@ -1,144 +1,114 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import Icon, { BrandMark } from './Icon';
-import TeacherPinModal from './TeacherPinModal';
-import { useT } from '../i18n';
-import { saveProfile } from '../db';
-import { clearToken } from '../auth';
+import { NavLink, useLocation } from 'react-router-dom';
+import Icon from './Icon';
+import { metaForLesson } from '../data/lmsData';
 
 const STUDENT_NAV = [
-  { to: '/',         icon: 'home',  labelKey: 'home' },
-  { to: '/courses',  icon: 'book',  labelKey: 'courses' },
-  { to: '/progress', icon: 'chart', labelKey: 'progress' }
+  { to: '/',         icon: 'home',     label: 'Home' },
+  { to: '/calendar', icon: 'calendar', label: 'Calendar' },
+  { to: '/todo',     icon: 'todo',     label: 'To-do' },
+  { to: '/progress', icon: 'grades',   label: 'Grades' }
 ];
 
 const TEACHER_NAV = [
-  { to: '/',        icon: 'home',    labelKey: 'dashboard' },
-  { to: '/content', icon: 'library', labelKey: 'content' },
-  { to: '/results', icon: 'chart',   labelKey: 'results' }
+  { to: '/',         icon: 'home',     label: 'Dashboard' },
+  { to: '/content',  icon: 'book',     label: 'Content' },
+  { to: '/results',  icon: 'grades',   label: 'Results' },
+  { to: '/calendar', icon: 'calendar', label: 'Calendar' }
 ];
 
-function pathIsActive(currentPath, target) {
-  if (target === '/') return currentPath === '/';
-  return currentPath === target || currentPath.startsWith(target + '/');
-}
-
-export default function Sidebar({ profile, setProfile }) {
+export default function Sidebar({ collapsed, role, courses = [], todoBadge = 0 }) {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { t } = useT();
-  const [pinOpen, setPinOpen] = useState(false);
-  const isTeacher = profile?.role === 'teacher';
-  const links = isTeacher ? TEACHER_NAV : STUDENT_NAV;
+  const isTeacher = role === 'teacher';
+  const primary = isTeacher ? TEACHER_NAV : STUDENT_NAV;
 
-  const lessonish = location.pathname.startsWith('/lesson') || location.pathname.startsWith('/quiz');
-
-  const flipToTeacher = async () => {
-    await saveProfile({ role: 'teacher' });
-    setProfile(p => ({ ...p, role: 'teacher' }));
-    navigate('/');
-  };
-
-  const flipToStudent = async () => {
-    clearToken();
-    await saveProfile({ role: 'student' });
-    setProfile(p => ({ ...p, role: 'student' }));
-    navigate('/');
-  };
-
-  const onRoleSwitchClick = () => {
-    if (isTeacher) {
-      flipToStudent();
-    } else {
-      setPinOpen(true);
-    }
-  };
-
-  const name = profile?.studentName || 'Student';
-  const initials = name.split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || 'S';
+  const activeCourseId = (() => {
+    const m = location.pathname.match(/^\/(?:course|lesson|quiz)\/(.+)$/);
+    return m ? m[1] : null;
+  })();
 
   return (
-    <>
-      <aside className="sidebar">
-        <Link to="/" className="sidebar-logo">
-          <BrandMark size={26} />
-          <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <span className="wordmark">offlinefirst</span>
-            {profile?.school && (
-              <span style={{
-                fontSize: 11, color: 'var(--ink-faint)', fontWeight: 500,
-                letterSpacing: '0.02em', marginTop: 2,
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                maxWidth: 160
-              }}>{profile.school}</span>
-            )}
-          </span>
-        </Link>
-
-        <nav className="nav-group">
-          {links.map(link => {
-            let active = pathIsActive(location.pathname, link.to);
-            if (link.to === '/courses' && lessonish && !isTeacher) active = true;
+    <aside className={`lms-sidebar${collapsed ? ' collapsed' : ''}`}>
+      <div className="lms-sidebar-scroll">
+        <nav className="lms-nav-group">
+          {primary.map(n => {
+            const isHome = n.to === '/';
             return (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`nav-item${active ? ' active' : ''}`}
+              <NavLink
+                key={n.to}
+                to={n.to}
+                end={isHome}
+                className={({ isActive }) => `lms-nav-item${isActive ? ' active' : ''}`}
+                title={collapsed ? n.label : undefined}
               >
-                <Icon name={link.icon} size={17} />
-                <span>{t(link.labelKey)}</span>
-              </Link>
+                {({ isActive }) => (
+                  <>
+                    <Icon name={isActive && n.icon === 'home' ? 'home-fill' : n.icon} size={20} />
+                    {!collapsed && <span className="lms-nav-label">{n.label}</span>}
+                    {!collapsed && n.to === '/todo' && todoBadge > 0 && (
+                      <span className="lms-nav-badge">{todoBadge}</span>
+                    )}
+                  </>
+                )}
+              </NavLink>
             );
           })}
         </nav>
 
-        {!isTeacher && (
-          <>
-            <div className="nav-divider" />
-            <div className="nav-group">
-              <div className="nav-group-title">{t('saved')}</div>
-              <button className="nav-item" type="button">
-                <Icon name="bookmark" size={17} />
-                <span>{t('bookmarks')}</span>
-              </button>
-              <button className="nav-item" type="button">
-                <Icon name="download" size={17} />
-                <span>{t('downloads')}</span>
-                <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--ink-faint)', fontWeight: 600 }}>3</span>
-              </button>
-            </div>
-          </>
+        <div className="lms-nav-divider" />
+
+        {!collapsed && (
+          <div className="lms-nav-section">
+            <Icon name="enrolled" size={18} />
+            <span className="lms-nav-label">{isTeacher ? 'Teaching' : 'Enrolled'}</span>
+          </div>
         )}
 
-        <div className="nav-spacer" />
-        <div className="nav-divider" />
-
-        <button className="role-switch" onClick={onRoleSwitchClick} title="Switch role" type="button">
-          <Icon name="users" size={15} />
-          <span>{isTeacher ? t('teacherView') : t('studentView')}</span>
-          <span className="role-switch-flip">{isTeacher ? t('signOut') : t('switch')}</span>
-        </button>
-
-        <Link to="/settings" className="nav-item">
-          <Icon name="settings" size={17} />
-          <span>{t('settings')}</span>
-        </Link>
-
-        <div className="userpill">
-          <div className="avatar">{initials}</div>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div className="name">{name}</div>
-            <div className="role-meta">{isTeacher ? 'Teacher' : 'Grade 5'}</div>
-          </div>
+        <div className="lms-course-list">
+          {courses.map(c => {
+            const meta = metaForLesson(c);
+            const active = activeCourseId === c.id;
+            return (
+              <NavLink
+                key={c.id}
+                to={`/course/${c.id}`}
+                className={`lms-course-item${active ? ' active' : ''}`}
+                title={collapsed ? c.subject : undefined}
+              >
+                <span className="lms-course-pip" style={{ background: meta.letterColor || '#5F6368' }}>
+                  {c.subject[0]}
+                </span>
+                {!collapsed && (
+                  <div className="lms-course-meta">
+                    <div className="lms-course-name">{c.subject}</div>
+                    <div className="lms-course-sub">{meta.section || c.grade_level}</div>
+                  </div>
+                )}
+              </NavLink>
+            );
+          })}
         </div>
-      </aside>
 
-      {pinOpen && (
-        <TeacherPinModal
-          onSuccess={() => { setPinOpen(false); flipToTeacher(); }}
-          onClose={() => setPinOpen(false)}
-        />
-      )}
-    </>
+        <div className="lms-nav-divider" />
+
+        <nav className="lms-nav-group">
+          <NavLink
+            to="/archived"
+            className={({ isActive }) => `lms-nav-item${isActive ? ' active' : ''}`}
+            title={collapsed ? 'Archived' : undefined}
+          >
+            <Icon name="archive" size={20} />
+            {!collapsed && <span className="lms-nav-label">Archived</span>}
+          </NavLink>
+          <NavLink
+            to="/settings"
+            className={({ isActive }) => `lms-nav-item${isActive ? ' active' : ''}`}
+            title={collapsed ? 'Settings' : undefined}
+          >
+            <Icon name="settings" size={20} />
+            {!collapsed && <span className="lms-nav-label">Settings</span>}
+          </NavLink>
+        </nav>
+      </div>
+    </aside>
   );
 }

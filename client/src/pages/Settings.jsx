@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
-import SectionHeader from '../components/SectionHeader';
-import { useT, LANGUAGES } from '../i18n';
+import Avatar from '../components/Avatar';
+import { useT, LANGUAGES as APP_LANGUAGES } from '../i18n';
 import { useTheme } from '../theme';
+import { LMS_LANGUAGES } from '../data/languages';
 import { fetchAuthStatus, isLoggedIn, clearToken, authedFetch } from '../auth';
 import { saveProfile } from '../db';
 import { triggerSync } from '../sync';
 
-export default function Settings({ profile, setProfile, a11y, setA11y, onRestartOnboarding }) {
-  const { t, lang, setLang } = useT();
+export default function Settings({ profile, setProfile, a11y, setA11y, onRestartOnboarding, onOpenLang }) {
+  const { t, lang } = useT();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [authEnabled, setAuthEnabled] = useState(false);
@@ -17,36 +18,27 @@ export default function Settings({ profile, setProfile, a11y, setA11y, onRestart
   const [busy, setBusy] = useState(false);
   const fileRef = useRef(null);
 
-  useEffect(() => {
-    fetchAuthStatus().then(s => setAuthEnabled(!!s.authEnabled));
-  }, []);
+  useEffect(() => { fetchAuthStatus().then(s => setAuthEnabled(!!s.authEnabled)); }, []);
 
-  const flash = (text) => {
-    setMsg(text);
-    setTimeout(() => setMsg(''), 4000);
-  };
+  const langName = (LMS_LANGUAGES.find(l => l.code === lang) || { native: 'English' }).native;
+  const isTeacher = profile?.role === 'teacher';
+
+  const flash = (text) => { setMsg(text); setTimeout(() => setMsg(''), 4000); };
 
   const exportData = async () => {
     setBusy(true);
     try {
       const res = await authedFetch('/api/admin/export');
-      if (!res.ok) {
-        flash(res.status === 401 ? t('mustSignInTeacher') : t('exportFailed'));
-        return;
-      }
+      if (!res.ok) { flash(res.status === 401 ? 'Sign in as teacher first.' : 'Export failed.'); return; }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `offlinefirst-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
-      flash(t('exportSaved'));
-    } finally {
-      setBusy(false);
-    }
+      flash('Backup downloaded.');
+    } finally { setBusy(false); }
   };
 
   const importData = async (e) => {
@@ -57,23 +49,15 @@ export default function Settings({ profile, setProfile, a11y, setA11y, onRestart
       const text = await file.text();
       const dump = JSON.parse(text);
       const res = await authedFetch('/api/admin/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dump)
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dump)
       });
-      if (!res.ok) {
-        flash(res.status === 401 ? t('mustSignInTeacher') : t('importFailed'));
-        return;
-      }
+      if (!res.ok) { flash(res.status === 401 ? 'Sign in as teacher first.' : 'Import failed.'); return; }
       const data = await res.json();
-      flash(`${t('importedCount')}: ${data.imported.lessons} lessons, ${data.imported.scores} scores`);
+      flash(`Imported ${data.imported.lessons} lessons, ${data.imported.scores} scores`);
       triggerSync();
     } catch (err) {
-      flash(t('importFailed') + ': ' + err.message);
-    } finally {
-      setBusy(false);
-      e.target.value = '';
-    }
+      flash('Import failed: ' + err.message);
+    } finally { setBusy(false); e.target.value = ''; }
   };
 
   const signOut = async () => {
@@ -83,186 +67,112 @@ export default function Settings({ profile, setProfile, a11y, setA11y, onRestart
     navigate('/');
   };
 
-  const isTeacher = profile?.role === 'teacher';
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s-8)' }}>
-      <header>
-        <h1 className="hero">{t('settings')}</h1>
-        <p style={{ marginTop: 8, color: 'var(--ink-muted)' }}>{t('settingsSub')}</p>
-      </header>
+    <div className="lms-page" style={{ maxWidth: 720 }}>
+      <h1 className="lms-page-title">Settings</h1>
+      <p className="lms-page-sub">Local preferences for this device.</p>
 
-      {msg && (
-        <div className="card card-pad" style={{ background: 'var(--brand-soft)', borderColor: 'var(--brand-soft)', color: 'var(--brand)', padding: '12px 16px' }}>
-          {msg}
-        </div>
-      )}
+      {msg && <div className="lms-toast"><Icon name="check-circle" size={14} /> {msg}</div>}
 
-      <section>
-        <SectionHeader title={t('preferences')} />
-        <div className="card" style={{ padding: 0 }}>
-          <Row
-            label={t('themeLabel')}
-            sub={t('themeSub')}
-            control={
-              <div style={{ display: 'flex', gap: 6 }}>
-                <ToggleBtn active={theme === 'light'} onClick={() => setTheme('light')}>
-                  <Icon name="sun" size={14} /> {t('lightTheme')}
-                </ToggleBtn>
-                <ToggleBtn active={theme === 'dark'} onClick={() => setTheme('dark')}>
-                  <Icon name="moon" size={14} /> {t('darkTheme')}
-                </ToggleBtn>
+      <h2 className="lms-section-title" style={{ marginTop: 16, marginBottom: 12 }}>Account</h2>
+      <div className="lms-card" style={{ marginBottom: 24 }}>
+        <div className="lms-list-row" style={{ cursor: 'default' }}>
+          <span className="lms-list-row-main">
+            <Avatar name={profile?.studentName} size={40} />
+            <span>
+              <div style={{ fontWeight: 500 }}>{profile?.studentName || 'Student'}</div>
+              <div className="lms-list-row-muted">
+                {isTeacher ? 'Teacher' : 'Student'}
+                {profile?.grade ? ' · ' + profile.grade : ''}
+                {profile?.subjects?.length ? ' · ' + profile.subjects.join(', ') : ''}
               </div>
-            }
-          />
-          <Row
-            label={t('largerTextLabel')}
-            sub={t('largerTextSub')}
-            control={
-              <ToggleBtn active={a11y} onClick={() => setA11y(v => !v)}>
-                {a11y ? t('on') : t('off')}
-              </ToggleBtn>
-            }
-          />
-          <Row
-            label={t('language')}
-            sub={t('languageSub')}
-            control={
-              <select
-                value={lang}
-                onChange={e => setLang(e.target.value)}
-                className="text-input"
-                style={{ minWidth: 140 }}
-              >
-                {LANGUAGES.map(l => (
-                  <option key={l.code} value={l.code}>{l.label} · {l.name}</option>
-                ))}
-              </select>
-            }
-          />
-          <Row
-            label={t('onbRestart')}
-            sub={t('onbRestartSub')}
-            control={
-              <button className="btn btn-secondary" onClick={onRestartOnboarding} type="button">
-                <Icon name="refresh" size={14} /> {t('onbRestart')}
-              </button>
-            }
-            last
-          />
-        </div>
-      </section>
-
-      <section>
-        <SectionHeader title={t('dataAdmin')} subtitle={t('dataAdminSub')} />
-        <div className="card" style={{ padding: 0 }}>
-          <Row
-            label={t('exportBackup')}
-            sub={t('exportBackupSub')}
-            control={
-              <button className="btn btn-secondary" onClick={exportData} disabled={busy} type="button">
-                <Icon name="download" size={14} /> {t('exportBtn')}
-              </button>
-            }
-          />
-          <Row
-            label={t('importBackup')}
-            sub={t('importBackupSub')}
-            control={
-              <>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="application/json,.json"
-                  onChange={importData}
-                  style={{ display: 'none' }}
-                />
-                <button className="btn btn-secondary" onClick={() => fileRef.current?.click()} disabled={busy} type="button">
-                  <Icon name="upload" size={14} /> {t('importBtn')}
-                </button>
-              </>
-            }
-            last
-          />
-        </div>
-      </section>
-
-      <section>
-        <SectionHeader title={t('account')} />
-        <div className="card card-pad" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 8,
-            background: 'var(--brand-soft)', color: 'var(--brand)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Icon name="user" size={18} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 14, fontWeight: 600 }}>{profile?.studentName || 'Student'}</div>
-            <div style={{ fontSize: 12, color: 'var(--ink-faint)' }}>
-              {isTeacher ? t('signedInTeacher') : t('signedInStudent')}
-              {!authEnabled && ' · ' + t('noPinSet')}
-              {isLoggedIn() && ' · ' + t('teacherTokenStored')}
-            </div>
-          </div>
+            </span>
+          </span>
           {isTeacher && (
-            <button className="btn btn-ghost" onClick={signOut} type="button">
-              {t('signOut')}
-            </button>
+            <button type="button" className="lms-text-btn" onClick={signOut}>Sign out</button>
           )}
         </div>
-      </section>
+      </div>
+
+      <h2 className="lms-section-title" style={{ marginTop: 16, marginBottom: 12 }}>Preferences</h2>
+      <div className="lms-card">
+        <button type="button" className="lms-list-row" onClick={onOpenLang}>
+          <span className="lms-list-row-main">
+            <Icon name="globe" size={20} color="var(--lms-ink-muted)" />
+            <span>
+              <div style={{ fontWeight: 500 }}>Language</div>
+              <div className="lms-list-row-muted">{langName} · {LMS_LANGUAGES.length} available</div>
+            </span>
+          </span>
+          <Icon name="chevron-right" size={16} color="var(--lms-ink-faint)" />
+        </button>
+        <button type="button" className="lms-list-row" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          <span className="lms-list-row-main">
+            <Icon name={theme === 'dark' ? 'moon' : 'sun'} size={20} color="var(--lms-ink-muted)" />
+            <span>
+              <div style={{ fontWeight: 500 }}>Theme</div>
+              <div className="lms-list-row-muted">{theme === 'dark' ? 'Dark' : 'Light'}</div>
+            </span>
+          </span>
+          <Icon name="chevron-right" size={16} color="var(--lms-ink-faint)" />
+        </button>
+        <button type="button" className="lms-list-row" onClick={() => setA11y(v => !v)}>
+          <span className="lms-list-row-main">
+            <Icon name="accessibility" size={20} color="var(--lms-ink-muted)" />
+            <span>
+              <div style={{ fontWeight: 500 }}>Larger text</div>
+              <div className="lms-list-row-muted">{a11y ? 'On' : 'Off'}</div>
+            </span>
+          </span>
+          <Icon name="chevron-right" size={16} color="var(--lms-ink-faint)" />
+        </button>
+      </div>
+
+      <h2 className="lms-section-title" style={{ marginTop: 32, marginBottom: 12 }}>Data and backups</h2>
+      <div className="lms-card">
+        <button type="button" className="lms-list-row" onClick={exportData} disabled={busy}>
+          <span className="lms-list-row-main">
+            <Icon name="download" size={20} color="var(--lms-ink-muted)" />
+            <span>
+              <div style={{ fontWeight: 500 }}>Export backup</div>
+              <div className="lms-list-row-muted">Lessons, scores, devices. Saved as JSON.</div>
+            </span>
+          </span>
+          <Icon name="chevron-right" size={16} color="var(--lms-ink-faint)" />
+        </button>
+        <input ref={fileRef} type="file" accept=".json" onChange={importData} style={{ display: 'none' }} />
+        <button type="button" className="lms-list-row" onClick={() => fileRef.current?.click()} disabled={busy}>
+          <span className="lms-list-row-main">
+            <Icon name="upload" size={20} color="var(--lms-ink-muted)" />
+            <span>
+              <div style={{ fontWeight: 500 }}>Restore from backup</div>
+              <div className="lms-list-row-muted">Imports the JSON file. Same-ID rows are replaced.</div>
+            </span>
+          </span>
+          <Icon name="chevron-right" size={16} color="var(--lms-ink-faint)" />
+        </button>
+      </div>
+
+      <h2 className="lms-section-title" style={{ marginTop: 32, marginBottom: 12 }}>Device</h2>
+      <div className="lms-card">
+        <button type="button" className="lms-list-row" onClick={onRestartOnboarding}>
+          <span className="lms-list-row-main">
+            <Icon name="refresh" size={20} color="var(--lms-ink-muted)" />
+            <span>
+              <div style={{ fontWeight: 500 }}>Sign out and restart setup</div>
+              <div className="lms-list-row-muted">Clears this device's profile and re-runs onboarding.</div>
+            </span>
+          </span>
+          <Icon name="chevron-right" size={16} color="var(--lms-ink-faint)" />
+        </button>
+      </div>
 
       {!authEnabled && (
-        <section>
-          <div className="card card-pad" style={{ background: 'var(--warning-soft)', borderColor: 'var(--warning-soft)' }}>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <Icon name="zap" size={18} color="var(--warning)" style={{ marginTop: 2 }} />
-              <div style={{ fontSize: 14, color: 'var(--ink)' }}>
-                <strong>{t('securityWarning')}</strong>
-                <div style={{ marginTop: 4, color: 'var(--ink-muted)' }}>{t('securityWarningSub')}</div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <div className="lms-toast" style={{ background: 'var(--lms-warn-soft)', color: 'var(--lms-warn)', marginTop: 24 }}>
+          <Icon name="alert-circle" size={14} />
+          No TEACHER_PIN configured. Anyone on this server can edit lessons. Set it in your Render environment.
+        </div>
       )}
     </div>
-  );
-}
-
-function Row({ label, sub, control, last }) {
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      gap: 16, padding: '16px 20px',
-      borderBottom: last ? 'none' : '1px solid var(--rule)'
-    }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 600 }}>{label}</div>
-        {sub && <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginTop: 2 }}>{sub}</div>}
-      </div>
-      <div style={{ flexShrink: 0 }}>{control}</div>
-    </div>
-  );
-}
-
-function ToggleBtn({ active, onClick, children }) {
-  return (
-    <button
-      onClick={onClick}
-      type="button"
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        padding: '7px 12px',
-        borderRadius: 'var(--r-sm)',
-        background: active ? 'var(--brand)' : 'var(--surface)',
-        color: active ? 'var(--brand-on)' : 'var(--ink)',
-        border: '1px solid ' + (active ? 'var(--brand)' : 'var(--rule-strong)'),
-        fontSize: 13, fontWeight: 600,
-        cursor: 'pointer', fontFamily: 'inherit'
-      }}
-    >
-      {children}
-    </button>
   );
 }
