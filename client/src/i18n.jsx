@@ -337,6 +337,15 @@ const translations = {
     onbRestart: 'Restart setup',
     onbRestartSub: 'Walk through the onboarding flow again.',
 
+    onbSchoolTitle: 'Where do you learn?',
+    onbSchoolSub: 'Optional — just so the app feels like yours. Lessons stay on this device either way.',
+    onbSchoolLockedSub: 'This device is registered to a specific school.',
+    onbSchoolLabel: 'School or learning group',
+    onbSchoolPh: 'Ada Academy',
+    onbSchoolHint: 'Leave blank if you’re learning at home or with friends.',
+    onbSchoolLockedHint: 'Set by your administrator to {name}.',
+    onbSummarySchool: 'School',
+
     // Initial
     initializing: 'Loading…'
   },

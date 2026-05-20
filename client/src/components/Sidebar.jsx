@@ -62,7 +62,17 @@ export default function Sidebar({ profile, setProfile }) {
       <aside className="sidebar">
         <Link to="/" className="sidebar-logo">
           <BrandMark size={26} />
-          <span className="wordmark">offlinefirst</span>
+          <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <span className="wordmark">offlinefirst</span>
+            {profile?.school && (
+              <span style={{
+                fontSize: 11, color: 'var(--ink-faint)', fontWeight: 500,
+                letterSpacing: '0.02em', marginTop: 2,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                maxWidth: 160
+              }}>{profile.school}</span>
+            )}
+          </span>
         </Link>
 
         <nav className="nav-group">

@@ -98,7 +98,8 @@ export const getAllScores = async () => {
 // Profile
 const PROFILE_KEYS = [
   'studentId', 'studentName', 'role',
-  'grade', 'subjects', 'lang', 'a11y', 'paired', 'onboardedAt'
+  'grade', 'subjects', 'lang', 'a11y', 'paired', 'onboardedAt',
+  'school'
 ];
 
 export const getProfile = async () => {
@@ -117,7 +118,8 @@ export const getProfile = async () => {
     lang: out.lang || null,
     a11y: !!out.a11y,
     paired: !!out.paired,
-    onboardedAt: out.onboardedAt || null
+    onboardedAt: out.onboardedAt || null,
+    school: out.school || null
   };
 };
 

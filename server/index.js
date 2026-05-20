@@ -99,7 +99,16 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     authEnabled: AUTH_ENABLED,
-    corsAllowlist: allowedOrigins.length > 0 ? allowedOrigins : 'all'
+    corsAllowlist: allowedOrigins.length > 0 ? allowedOrigins : 'all',
+    school: process.env.SCHOOL_NAME || null
+  });
+});
+
+// Lightweight school metadata — used by onboarding to prefill.
+app.get('/api/school', (req, res) => {
+  res.json({
+    name: process.env.SCHOOL_NAME || null,
+    locked: !!process.env.SCHOOL_NAME // true → onboarding shows it read-only
   });
 });
 

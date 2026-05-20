@@ -177,7 +177,8 @@ function AppContent() {
       lang: next.lang || 'en',
       a11y: !!next.a11y,
       paired: !!next.paired,
-      onboardedAt: next.onboardedAt
+      onboardedAt: next.onboardedAt,
+      school: next.school || null
     });
     setProfile({ ...next, studentId });
     if (next.lang) setLang(next.lang);

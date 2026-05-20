@@ -11,7 +11,9 @@ const GRADE_LEVELS = [
 
 const SUBJECTS = ['Mathematics', 'Science', 'Literacy', 'History', 'Languages', 'Other'];
 
-const TOTAL = 8;
+// 0 welcome  1 role  2 school  3 name  4 lang  5 a11y  6 grade/subjects  7 pair  8 done
+const TOTAL = 9;
+const TOTAL_STEPS_SHOWN = 7; // step counter goes 1..7 (excludes welcome + done)
 
 function StepDots({ count, current }) {
   return (
@@ -147,11 +149,42 @@ function StepRole({ role, onPick, t, stepLabel }) {
   );
 }
 
-function StepName({ role, name, onChange, t, stepLabel }) {
+function StepSchool({ school, onChange, serverSchool, serverLocked, t, stepLabel }) {
   return (
     <div className="onb-step">
       <StepHeading
         eyebrow={stepLabel(2)}
+        title={t('onbSchoolTitle')}
+        sub={serverLocked ? t('onbSchoolLockedSub') : t('onbSchoolSub')}
+      />
+      <div style={{ maxWidth: 460, margin: '0 auto' }}>
+        <label className="label" style={{ display: 'block', marginBottom: 8 }}>
+          {t('onbSchoolLabel')}
+        </label>
+        <input
+          className="text-input onb-name-input"
+          value={school}
+          onChange={e => !serverLocked && onChange(e.target.value)}
+          placeholder={t('onbSchoolPh')}
+          autoFocus={!serverLocked}
+          readOnly={serverLocked}
+          style={serverLocked ? { background: 'var(--surface-2)', cursor: 'not-allowed' } : null}
+        />
+        <div style={{ fontSize: 12, color: 'var(--ink-faint)', marginTop: 8 }}>
+          {serverLocked
+            ? t('onbSchoolLockedHint').replace('{name}', serverSchool)
+            : t('onbSchoolHint')}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StepName({ role, name, onChange, t, stepLabel }) {
+  return (
+    <div className="onb-step">
+      <StepHeading
+        eyebrow={stepLabel(3)}
         title={role === 'teacher' ? t('onbNameTeacherTitle') : t('onbNameStudentTitle')}
         sub={role === 'teacher' ? t('onbNameTeacherSub') : t('onbNameStudentSub')}
       />
@@ -175,7 +208,7 @@ function StepName({ role, name, onChange, t, stepLabel }) {
 function StepLanguage({ lang, onPick, t, stepLabel }) {
   return (
     <div className="onb-step">
-      <StepHeading eyebrow={stepLabel(3)} title={t('onbLangTitle')} sub={t('onbLangSub')} />
+      <StepHeading eyebrow={stepLabel(4)} title={t('onbLangTitle')} sub={t('onbLangSub')} />
       <div className="lang-grid">
         {LANGUAGES.map(l => (
           <button
@@ -200,7 +233,7 @@ function StepLanguage({ lang, onPick, t, stepLabel }) {
 function StepA11y({ a11y, onPick, t, stepLabel }) {
   return (
     <div className="onb-step">
-      <StepHeading eyebrow={stepLabel(4)} title={t('onbA11yTitle')} sub={t('onbA11ySub')} />
+      <StepHeading eyebrow={stepLabel(5)} title={t('onbA11yTitle')} sub={t('onbA11ySub')} />
       <div className="a11y-grid">
         <button type="button" className={`a11y-card${!a11y ? ' selected' : ''}`} onClick={() => onPick(false)}>
           <div className="a11y-sample" style={{ fontSize: 14 }}>{t('onbA11ySample')}</div>
@@ -222,7 +255,7 @@ function StepA11y({ a11y, onPick, t, stepLabel }) {
 function StepGrade({ grade, onPick, t, stepLabel }) {
   return (
     <div className="onb-step">
-      <StepHeading eyebrow={stepLabel(5)} title={t('onbGradeTitle')} sub={t('onbGradeSub')} />
+      <StepHeading eyebrow={stepLabel(6)} title={t('onbGradeTitle')} sub={t('onbGradeSub')} />
       <div className="choice-grid">
         {GRADE_LEVELS.map(g => (
           <ChoiceCard
@@ -242,7 +275,7 @@ function StepGrade({ grade, onPick, t, stepLabel }) {
 function StepSubjects({ subjects, onToggle, t, stepLabel }) {
   return (
     <div className="onb-step">
-      <StepHeading eyebrow={stepLabel(5)} title={t('onbSubjectsTitle')} sub={t('onbSubjectsSub')} />
+      <StepHeading eyebrow={stepLabel(6)} title={t('onbSubjectsTitle')} sub={t('onbSubjectsSub')} />
       <div className="choice-grid choice-grid-3">
         {SUBJECTS.map(s => (
           <ChoiceCard
@@ -265,7 +298,7 @@ function StepSubjects({ subjects, onToggle, t, stepLabel }) {
 function StepStudentPair({ paired, onMark, t, stepLabel }) {
   return (
     <div className="onb-step">
-      <StepHeading eyebrow={stepLabel(6)} title={t('onbPairStudentTitle')} sub={t('onbPairStudentSub')} />
+      <StepHeading eyebrow={stepLabel(7)} title={t('onbPairStudentTitle')} sub={t('onbPairStudentSub')} />
       <div className="pair-row">
         <div className="pair-col">
           <div className="pair-col-eyebrow">{t('onbPairOption1')}</div>
@@ -327,7 +360,7 @@ function StepTeacherPair({ deviceId, paired, onMark, t, stepLabel }) {
 
   return (
     <div className="onb-step">
-      <StepHeading eyebrow={stepLabel(6)} title={t('onbPairTeacherTitle')} sub={t('onbPairTeacherSub')} />
+      <StepHeading eyebrow={stepLabel(7)} title={t('onbPairTeacherTitle')} sub={t('onbPairTeacherSub')} />
       <div className="pair-teacher">
         <div className="qr-card" style={{ marginBottom: 0 }}>
           <div className="qr-grid" style={{ gridTemplateColumns: 'repeat(9, 18px)', gridTemplateRows: 'repeat(9, 18px)' }}>
@@ -357,7 +390,7 @@ function StepTeacherPair({ deviceId, paired, onMark, t, stepLabel }) {
   );
 }
 
-function StepDone({ role, name, lang, a11y, grade, subjects, paired, t }) {
+function StepDone({ role, name, school, lang, a11y, grade, subjects, paired, t }) {
   const langName = (LANGUAGES.find(l => l.code === lang) || {}).name || lang;
   const gradeDef = GRADE_LEVELS.find(g => g.id === grade);
   const gradeName = gradeDef ? t(gradeDef.labelKey) : null;
@@ -388,6 +421,7 @@ function StepDone({ role, name, lang, a11y, grade, subjects, paired, t }) {
           value={role === 'teacher' ? t('onbRoleTeacher') : t('onbRoleStudent')}
         />
         <SummaryRow icon="user" label={t('onbSummaryName')} value={name} />
+        {school && <SummaryRow icon="library" label={t('onbSummarySchool')} value={school} />}
         <SummaryRow icon="globe" label={t('onbSummaryLang')} value={langName} />
         <SummaryRow icon="type" label={t('onbSummaryText')} value={a11y ? t('onbA11yLarge') : t('onbA11yNormal')} />
         {role === 'student' && gradeName && <SummaryRow icon="layers" label={t('onbSummaryGrade')} value={gradeName} />}
@@ -410,6 +444,9 @@ export default function Onboarding({ onComplete, initialLang = 'en' }) {
   const { t, setLang: setI18nLang } = useT();
   const [step, setStep] = useState(0);
   const [role, setRole] = useState(null);
+  const [school, setSchool] = useState('');
+  const [serverSchool, setServerSchool] = useState(null);
+  const [serverLocked, setServerLocked] = useState(false);
   const [name, setName] = useState('');
   const [lang, setLang] = useState(initialLang);
   const [a11y, setA11y] = useState(false);
@@ -421,12 +458,28 @@ export default function Onboarding({ onComplete, initialLang = 'en' }) {
     []
   );
 
-  const stepLabel = (n) => `${t('onbStepWord')} ${n} ${t('onbOfWord')} 6`;
+  // Fetch server-side school name (set via SCHOOL_NAME env var). If present,
+  // prefill + lock the field so per-school deploys don't ask users to retype.
+  useEffect(() => {
+    fetch('/api/school')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.name) {
+          setServerSchool(data.name);
+          setServerLocked(!!data.locked);
+          setSchool(prev => prev || data.name);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const stepLabel = (n) => `${t('onbStepWord')} ${n} ${t('onbOfWord')} ${TOTAL_STEPS_SHOWN}`;
 
   const canAdvance = () => {
     if (step === 1) return !!role;
-    if (step === 2) return name.trim().length >= 2;
-    if (step === 5) return role === 'student' ? !!grade : subjects.length > 0;
+    if (step === 2) return true; // school is optional
+    if (step === 3) return name.trim().length >= 2;
+    if (step === 6) return role === 'student' ? !!grade : subjects.length > 0;
     return true;
   };
 
@@ -449,6 +502,7 @@ export default function Onboarding({ onComplete, initialLang = 'en' }) {
     onComplete({
       role,
       studentName: name.trim() || 'Student',
+      school: school.trim() || null,
       lang,
       a11y,
       grade,
@@ -485,19 +539,21 @@ export default function Onboarding({ onComplete, initialLang = 'en' }) {
         <div className="onb-body">
           {step === 0 && <StepWelcome t={t} />}
           {step === 1 && <StepRole role={role} onPick={setRole} t={t} stepLabel={stepLabel} />}
-          {step === 2 && <StepName role={role} name={name} onChange={setName} t={t} stepLabel={stepLabel} />}
-          {step === 3 && <StepLanguage lang={lang} onPick={setLang} t={t} stepLabel={stepLabel} />}
-          {step === 4 && <StepA11y a11y={a11y} onPick={setA11y} t={t} stepLabel={stepLabel} />}
-          {step === 5 && (role === 'teacher'
+          {step === 2 && <StepSchool school={school} onChange={setSchool} serverSchool={serverSchool} serverLocked={serverLocked} t={t} stepLabel={stepLabel} />}
+          {step === 3 && <StepName role={role} name={name} onChange={setName} t={t} stepLabel={stepLabel} />}
+          {step === 4 && <StepLanguage lang={lang} onPick={setLang} t={t} stepLabel={stepLabel} />}
+          {step === 5 && <StepA11y a11y={a11y} onPick={setA11y} t={t} stepLabel={stepLabel} />}
+          {step === 6 && (role === 'teacher'
             ? <StepSubjects subjects={subjects} onToggle={toggleSubject} t={t} stepLabel={stepLabel} />
             : <StepGrade grade={grade} onPick={setGrade} t={t} stepLabel={stepLabel} />)}
-          {step === 6 && (role === 'teacher'
+          {step === 7 && (role === 'teacher'
             ? <StepTeacherPair deviceId={deviceId} paired={paired} onMark={() => setPaired(true)} t={t} stepLabel={stepLabel} />
             : <StepStudentPair paired={paired} onMark={() => setPaired(true)} t={t} stepLabel={stepLabel} />)}
-          {step === 7 && (
+          {step === 8 && (
             <StepDone
               role={role}
               name={name.trim() || 'Student'}
+              school={school.trim()}
               lang={lang}
               a11y={a11y}
               grade={grade}
