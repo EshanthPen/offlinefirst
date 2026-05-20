@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getProfile, saveProfile, seedFromStaticIfEmpty, getLessonById } from './db';
+import { getProfile, saveProfile, seedFromStaticIfEmpty, getLessonById, clearProfile } from './db';
 import { startAutoSync, getSyncState, onSyncStateChange } from './sync';
+import { clearToken } from './auth';
 import { sampleLessons } from './data/sampleLessons';
 import { I18nProvider, useT } from './i18n';
 import { ThemeProvider } from './theme';
@@ -20,6 +21,7 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherContent from './pages/TeacherContent';
 import TeacherResults from './pages/TeacherResults';
 import Settings from './pages/Settings';
+import Onboarding from './pages/Onboarding';
 
 const A11Y_KEY = 'offlinefirst_a11y';
 
@@ -38,10 +40,7 @@ function LessonTitleWatcher({ setLessonTitle }) {
   return null;
 }
 
-function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent }) {
-  const settingsRoute = (
-    <Route path="/settings" element={<Settings profile={profile} setProfile={setProfile} a11y={a11y} setA11y={setA11y} />} />
-  );
+function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent, onRestartOnboarding }) {
   const [pairOpen, setPairOpen] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
   const [sync, setSync] = useState(getSyncState());
@@ -50,6 +49,21 @@ function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent }
   useEffect(() => onSyncStateChange(setSync), []);
 
   const isTeacher = profile?.role === 'teacher';
+
+  const settingsRoute = (
+    <Route
+      path="/settings"
+      element={
+        <Settings
+          profile={profile}
+          setProfile={setProfile}
+          a11y={a11y}
+          setA11y={setA11y}
+          onRestartOnboarding={onRestartOnboarding}
+        />
+      }
+    />
+  );
 
   return (
     <div className="app">
@@ -111,7 +125,7 @@ function Shell({ profile, setProfile, a11y, setA11y, newContent, setNewContent }
 }
 
 function AppContent() {
-  const { t } = useT();
+  const { t, setLang } = useT();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [newContent, setNewContent] = useState(0);
@@ -120,16 +134,7 @@ function AppContent() {
   useEffect(() => {
     let interval = null;
     const init = async () => {
-      let p = await getProfile();
-      if (!p.studentId) {
-        const np = {
-          studentId: 'student_' + Math.random().toString(36).substring(2, 11),
-          studentName: 'Aminata Diallo',
-          role: 'student'
-        };
-        await saveProfile(np);
-        p = np;
-      }
+      const p = await getProfile();
       setProfile(p);
       await seedFromStaticIfEmpty(sampleLessons);
       setLoading(false);
@@ -150,6 +155,41 @@ function AppContent() {
     localStorage.setItem(A11Y_KEY, a11y ? '1' : '0');
   }, [a11y]);
 
+  const completeOnboarding = async (payload) => {
+    const next = payload || {
+      role: 'student',
+      studentName: 'Student',
+      lang: 'en',
+      a11y: false,
+      grade: 'g4-6',
+      subjects: [],
+      paired: false,
+      onboardedAt: new Date().toISOString()
+    };
+    const studentId = profile?.studentId
+      || 'student_' + Math.random().toString(36).substring(2, 11);
+    await saveProfile({
+      studentId,
+      studentName: next.studentName,
+      role: next.role,
+      grade: next.grade || null,
+      subjects: next.subjects || [],
+      lang: next.lang || 'en',
+      a11y: !!next.a11y,
+      paired: !!next.paired,
+      onboardedAt: next.onboardedAt
+    });
+    setProfile({ ...next, studentId });
+    if (next.lang) setLang(next.lang);
+    setA11y(!!next.a11y);
+  };
+
+  const restartOnboarding = async () => {
+    clearToken();
+    await clearProfile();
+    setProfile({ studentId: null, studentName: 'Student', role: 'student', onboardedAt: null });
+  };
+
   if (loading) {
     return (
       <div style={{
@@ -162,6 +202,10 @@ function AppContent() {
     );
   }
 
+  if (!profile?.onboardedAt) {
+    return <Onboarding onComplete={completeOnboarding} initialLang={profile?.lang || 'en'} />;
+  }
+
   return (
     <BrowserRouter>
       <Shell
@@ -171,6 +215,7 @@ function AppContent() {
         setA11y={setA11y}
         newContent={newContent}
         setNewContent={setNewContent}
+        onRestartOnboarding={restartOnboarding}
       />
     </BrowserRouter>
   );

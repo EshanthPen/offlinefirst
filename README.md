@@ -65,6 +65,29 @@ When `TEACHER_PIN` is set:
 
 Manual backup any time via **Settings → Data and backups → Export JSON** (downloads everything as a single file). Restore via Import.
 
+## Daily auto-backup
+
+The server writes a JSON snapshot of the entire database every `BACKUP_INTERVAL_HOURS` hours (default `24`) to `BACKUP_DIR` (default `<DB_PATH parent>/backups`). The last 14 are kept; older ones are pruned automatically.
+
+Set the four S3 env vars (`S3_BUCKET`, `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`) to also upload each backup to any S3-compatible store — AWS S3, Cloudflare R2, Backblaze B2, MinIO. Uses a built-in SigV4 signer (no `aws-sdk` dependency).
+
+Set `BACKUP_INTERVAL_HOURS=0` to disable.
+
+## Multi-tenancy: one deploy per school
+
+OfflineFirst intentionally does not have row-level tenancy. The recommended model for serving multiple schools is **one deploy per school**:
+
+- Each school gets its own Render service (or Fly app, or Pi)
+- Each deploy has its own `TEACHER_PIN`, `AUTH_SECRET`, `ALLOWED_ORIGINS`, `BACKUP_DIR`
+- Data is fully isolated at the host level — no schema for "tenant_id", no risk of one school seeing another's scores
+- Costs are linear and predictable: a Render Starter plan ($7/mo) per school, or one $5/mo Pi at the school for true zero-internet deployments
+
+Use Render's Blueprint feature to spin up a new school in ~3 minutes by importing the same `render.yaml` against a fresh service name, then setting that school's env vars.
+
+## Onboarding (first run)
+
+On first launch the app shows an 8-step onboarding wizard that captures: role (student / teacher), display name, language, text size, grade level (student) or subject list (teacher), and optional pairing with a nearby device. The profile is stored in IndexedDB and survives reloads. Users can replay onboarding any time from **Settings → Preferences → Restart setup**.
+
 ## SDG Alignment
 - **SDG 4**: Delivers structured curriculum (lessons + quizzes) to zero-connectivity environments
 - **SDG 9**: Mesh sync layer creates resilient educational infrastructure from existing consumer devices

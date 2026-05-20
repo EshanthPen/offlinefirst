@@ -8,7 +8,7 @@ import { fetchAuthStatus, isLoggedIn, clearToken, authedFetch } from '../auth';
 import { saveProfile } from '../db';
 import { triggerSync } from '../sync';
 
-export default function Settings({ profile, setProfile, a11y, setA11y }) {
+export default function Settings({ profile, setProfile, a11y, setA11y, onRestartOnboarding }) {
   const { t, lang, setLang } = useT();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
@@ -138,6 +138,15 @@ export default function Settings({ profile, setProfile, a11y, setA11y }) {
                   <option key={l.code} value={l.code}>{l.label} — {l.name}</option>
                 ))}
               </select>
+            }
+          />
+          <Row
+            label={t('onbRestart')}
+            sub={t('onbRestartSub')}
+            control={
+              <button className="btn btn-secondary" onClick={onRestartOnboarding} type="button">
+                <Icon name="refresh" size={14} /> {t('onbRestart')}
+              </button>
             }
             last
           />

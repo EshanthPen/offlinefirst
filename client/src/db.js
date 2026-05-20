@@ -96,16 +96,38 @@ export const getAllScores = async () => {
 };
 
 // Profile
+const PROFILE_KEYS = [
+  'studentId', 'studentName', 'role',
+  'grade', 'subjects', 'lang', 'a11y', 'paired', 'onboardedAt'
+];
+
 export const getProfile = async () => {
   const db = await initDB();
-  const id = await db.get('profile', 'studentId');
-  const name = await db.get('profile', 'studentName');
-  const role = await db.get('profile', 'role');
+  const out = {};
+  for (const k of PROFILE_KEYS) {
+    const row = await db.get('profile', k);
+    if (row?.value !== undefined) out[k] = row.value;
+  }
   return {
-    studentId: id?.value || null,
-    studentName: name?.value || 'Student',
-    role: role?.value || 'student'
+    studentId: out.studentId || null,
+    studentName: out.studentName || 'Student',
+    role: out.role || 'student',
+    grade: out.grade || null,
+    subjects: out.subjects || [],
+    lang: out.lang || null,
+    a11y: !!out.a11y,
+    paired: !!out.paired,
+    onboardedAt: out.onboardedAt || null
   };
+};
+
+export const clearProfile = async () => {
+  const db = await initDB();
+  const tx = db.transaction('profile', 'readwrite');
+  for (const k of PROFILE_KEYS) {
+    await tx.store.delete(k);
+  }
+  await tx.done;
 };
 
 export const saveProfile = async (profile) => {

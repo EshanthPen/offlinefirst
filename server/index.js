@@ -5,6 +5,7 @@ const fs = require('fs');
 const db = require('./db');
 const { sampleLessons } = require('./seedData');
 const { AUTH_ENABLED } = require('./auth');
+const { startScheduledBackups } = require('./backup');
 const lessonsRouter = require('./routes/lessons');
 const scoresRouter = require('./routes/scores');
 const devicesRouter = require('./routes/devices');
@@ -130,6 +131,8 @@ if (fs.existsSync(distPath)) {
   });
   console.log(`Serving static frontend from ${distPath}`);
 }
+
+startScheduledBackups();
 
 app.listen(PORT, () => {
   console.log(`OfflineFirst server running on port ${PORT}`);
