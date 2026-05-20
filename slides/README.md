@@ -4,9 +4,17 @@ Everything you need to record the YCS submission video.
 
 ## Files
 
-- `index.html` — the slide deck. Open in any browser, hit `F` for fullscreen.
+- `index.html` — the slide deck for live presenting. Open in any browser, hit `F` for fullscreen.
+- `offlinefirst-pitch.pptx` — same 8 slides as a PowerPoint file. Drop into Keynote, Google Slides (File → Import), or PowerPoint directly. Speaker notes are embedded.
+- `build_pptx.py` — the script that generates the pptx. Re-run with `python3 slides/build_pptx.py` after editing content.
 - `script.md` — voiceover, timing, when-to-cut-to-app cues.
 - `README.md` — this file. Recording workflow.
+
+### Which one do I use?
+
+- **Recording the video** — use `index.html`. It's pixel-accurate to the app's design language and has a built-in 1:55 timer.
+- **Sharing the deck with a teacher / judge / mentor for review** — send `offlinefirst-pitch.pptx`. They can open it in any tool, leave comments, see the speaker notes.
+- **Importing into Google Slides** — use the pptx. File → Import slides → upload it.
 
 ## Running the deck
 
