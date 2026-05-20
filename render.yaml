@@ -3,20 +3,18 @@ services:
     name: offlinefirst
     runtime: node
     plan: free
-    buildCommand: npm run build
-    startCommand: npm start
+    buildCommand: "node -v && npm -v && cd client && npm install && npm run build && cd ../server && npm install --omit=dev"
+    startCommand: "node server/index.js"
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: "20.18.0"
 
 # To enable persistent quiz scores after restart:
 # 1. Upgrade this service to Starter ($7/mo) in the Render dashboard
-# 2. Uncomment the block below
-# 3. Add to envVars above:
-#      - key: DB_PATH
-#        value: /var/data/offlinefirst.db
-# 4. Redeploy.
-#
+# 2. Add envVar DB_PATH = /var/data/offlinefirst.db
+# 3. Uncomment + redeploy:
 #    disk:
 #      name: data
 #      mountPath: /var/data
