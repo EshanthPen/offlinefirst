@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: offlinefirst
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_PATH
+        value: /var/data/offlinefirst.db
+    # Paid plans only: persistent disk for SQLite.
+    # On free plan, the disk block is ignored — DB resets on cold start
+    # (seed-on-first-run re-creates the 3 sample lessons automatically).
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1

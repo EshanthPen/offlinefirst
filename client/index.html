@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <title>OfflineFirst — Education without internet</title>
+    <script>
+      (function () {
+        var saved = localStorage.getItem('of_theme');
+        var sysDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (sysDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        var a11y = localStorage.getItem('offlinefirst_a11y') === '1' ? 'large' : 'normal';
+        document.documentElement.setAttribute('data-a11y', a11y);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
