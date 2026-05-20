@@ -1,538 +1,430 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>OfflineFirst Slides</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<style>
-  :root {
-    --paper:        #FFFFFF;
-    --surface-2:    #F7F6F3;
-    --surface-3:    #EFEEEB;
-    --ink:          #37352F;
-    --ink-muted:    #787774;
-    --ink-faint:    #9B9A97;
-    --rule:         rgba(55, 53, 47, 0.09);
-    --rule-strong:  rgba(55, 53, 47, 0.16);
-    --brand:        #2E7D5B;
-    --brand-strong: #245F46;
-    --brand-soft:   #E8F0EC;
-    --subj-math:    #3A6896;
-    --subj-math-soft:#E5ECF2;
-    --subj-science: #4A7A65;
-    --subj-literacy:#A37B3F;
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
-  }
+  <meta charset="UTF-8" />
+  <title>OfflineFirst — Pitch deck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="../client/public/icons/icon.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #FFFFFF;
+      --ink:       #202124;
+      --muted:     #5F6368;
+      --faint:     #9AA0A6;
+      --rule:      #DADCE0;
+      --primary:   #1967D2;
+      --primary-soft: #E8F0FE;
+      --ok:        #1E8E3E;
+      --warn:      #F9AB00;
+      --bad:       #D93025;
+      --sans:      'Roboto', sans-serif;
+      --display:   'Google Sans', 'Roboto', sans-serif;
+      --mono:      'JetBrains Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #000; color: var(--ink); font-family: var(--sans); height: 100%; overflow: hidden; }
 
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: #1a1a1a;
-    font-family: var(--font-sans);
-    color: var(--ink);
-    overflow: hidden;
-    height: 100vh;
-  }
+    .deck { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #0a0a0a; }
+    .frame {
+      width: 100vw;
+      max-width: calc(100vh * 16 / 9);
+      aspect-ratio: 16/9;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* The slide stage is letterboxed to 16:9 */
-  #stage {
-    position: relative;
-    width: 100vw; height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-  }
-  #frame {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    width: min(100vw, calc(100vh * 16 / 9));
-    height: min(100vh, calc(100vw * 9 / 16));
-    background: var(--paper);
-    overflow: hidden;
-    box-shadow: 0 0 40px rgba(0,0,0,0.4);
-  }
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      padding: 64px 80px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 240ms cubic-bezier(.2,.8,.2,1);
+    }
+    .slide.active { opacity: 1; pointer-events: auto; }
+    .slide.center { align-items: center; justify-content: center; text-align: center; }
 
-  .slide {
-    position: absolute; inset: 0;
-    padding: 80px 100px;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-  .slide.active { display: flex; opacity: 1; }
+    .chrome {
+      position: absolute; top: 24px; right: 32px; left: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--mono); font-size: 13px; color: var(--faint);
+      pointer-events: none; z-index: 10;
+    }
+    .chrome-brand { display: flex; align-items: center; gap: 8px; color: var(--primary); font-family: var(--display); font-weight: 500; font-size: 14px; }
+    .chrome-counter { letter-spacing: 0.08em; }
+    .chrome-timer { color: var(--ok); font-variant-numeric: tabular-nums; }
+    .chrome-timer.warn { color: var(--warn); }
+    .chrome-timer.over { color: var(--bad); }
 
-  .eyebrow {
-    font-size: 14px; font-weight: 600;
-    color: var(--brand);
-    letter-spacing: 0.08em; text-transform: uppercase;
-    margin-bottom: 28px;
-  }
-  h1 {
-    font-size: 88px; font-weight: 700;
-    letter-spacing: -0.03em; line-height: 1.0;
-    margin: 0 0 32px;
-    color: var(--ink);
-  }
-  h2 {
-    font-size: 56px; font-weight: 700;
-    letter-spacing: -0.025em; line-height: 1.1;
-    margin: 0 0 24px;
-  }
-  h3 {
-    font-size: 32px; font-weight: 600;
-    letter-spacing: -0.015em; line-height: 1.2;
-    margin: 0 0 12px;
-  }
-  p {
-    font-size: 24px; line-height: 1.5;
-    color: var(--ink-muted);
-    max-width: 900px;
-    margin: 0;
-  }
-  p.large { font-size: 28px; color: var(--ink); }
-  p strong { color: var(--ink); font-weight: 700; }
+    .progress {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: transparent;
+      z-index: 10; pointer-events: none;
+    }
+    .progress > div { height: 100%; background: var(--primary); width: 0%; transition: width 240ms ease; }
 
-  .brand-row {
-    display: flex; align-items: center; gap: 18px;
-    margin-bottom: 36px;
-  }
-  .wordmark {
-    font-size: 28px; font-weight: 700;
-    letter-spacing: -0.025em;
-  }
+    .hint {
+      position: absolute; bottom: 18px; left: 32px; right: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--mono); font-size: 11px; color: var(--faint);
+      z-index: 10; pointer-events: none;
+    }
 
-  .stat {
-    font-size: 200px; font-weight: 800;
-    line-height: 1; letter-spacing: -0.05em;
-    color: var(--brand);
-    margin: 16px 0 32px;
-  }
-  .stat-sub {
-    font-size: 28px; font-weight: 500;
-    color: var(--ink-muted);
-    line-height: 1.5;
-  }
+    .eyebrow {
+      font-family: var(--mono); font-size: 14px; font-weight: 500;
+      color: var(--primary); letter-spacing: 0.16em; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .h1 { font-family: var(--display); font-size: 76px; font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; color: var(--ink); margin: 0; }
+    .h2 { font-family: var(--display); font-size: 48px; font-weight: 500; line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); margin: 0; }
+    .body { font-size: 26px; line-height: 1.5; color: var(--muted); max-width: 900px; margin: 24px 0 0; }
+    .body strong { color: var(--ink); font-weight: 500; }
+    .source { font-family: var(--mono); font-size: 13px; color: var(--faint); margin-top: 32px; letter-spacing: 0.04em; }
 
-  .three-up {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 32px; margin-top: 48px;
-  }
-  .pillar {
-    background: var(--surface-2);
-    border: 1px solid var(--rule);
-    border-radius: 12px;
-    padding: 32px;
-  }
-  .pillar-icon {
-    width: 56px; height: 56px; border-radius: 12px;
-    background: var(--brand-soft); color: var(--brand);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 20px;
-  }
-  .pillar h3 { font-size: 22px; margin-bottom: 8px; }
-  .pillar p { font-size: 16px; line-height: 1.5; }
+    .title-mark { color: var(--primary); margin-bottom: 28px; display: flex; align-items: center; justify-content: center; }
+    .title-name { font-family: var(--display); font-size: 96px; font-weight: 500; letter-spacing: -0.025em; color: var(--ink); line-height: 1; }
+    .title-tag { font-size: 28px; color: var(--muted); margin-top: 18px; }
+    .title-credit { position: absolute; bottom: 64px; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 14px; color: var(--faint); letter-spacing: 0.08em; }
 
-  .timeline {
-    display: grid; gap: 18px;
-    margin-top: 24px;
-    max-width: 1000px;
-  }
-  .step {
-    display: grid; grid-template-columns: 130px 1fr; gap: 24px;
-    align-items: baseline;
-  }
-  .step-time {
-    font-family: var(--font-mono);
-    font-size: 18px;
-    color: var(--brand);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-  .step-text {
-    font-size: 22px;
-    color: var(--ink);
-    line-height: 1.4;
-  }
-  .step-text em {
-    color: var(--ink-muted); font-style: normal; font-weight: 400; font-size: 18px; display: block; margin-top: 2px;
-  }
+    .huge { font-family: var(--display); font-weight: 700; font-size: 280px; line-height: 0.95; letter-spacing: -0.04em; color: var(--primary); margin: 0; }
+    .huge-sub { font-size: 36px; color: var(--ink); margin-top: 24px; line-height: 1.3; font-weight: 400; }
+    .huge-sub strong { font-weight: 600; }
 
-  .sdgs {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 24px; margin-top: 48px;
-  }
-  .sdg {
-    background: var(--paper); border: 1.5px solid var(--rule);
-    border-radius: 12px; padding: 28px;
-  }
-  .sdg-num {
-    font-size: 64px; font-weight: 800; line-height: 1;
-    letter-spacing: -0.04em;
-    margin-bottom: 8px;
-  }
-  .sdg-name {
-    font-size: 14px; letter-spacing: 0.06em;
-    text-transform: uppercase; font-weight: 600;
-    color: var(--ink-muted);
-    margin-bottom: 16px;
-  }
-  .sdg-desc { font-size: 15px; color: var(--ink); line-height: 1.5; }
-  .sdg.s4  { border-color: var(--brand); }
-  .sdg.s4 .sdg-num { color: var(--brand); }
-  .sdg.s9  { border-color: var(--subj-math); }
-  .sdg.s9 .sdg-num { color: var(--subj-math); }
-  .sdg.s10 { border-color: var(--subj-literacy); }
-  .sdg.s10 .sdg-num { color: var(--subj-literacy); }
+    .cut { background: #0a0a0a; color: white; }
+    .cut .cut-text { font-family: var(--display); font-size: 64px; font-weight: 500; letter-spacing: -0.01em; }
+    .cut .cut-rec {
+      margin-top: 32px;
+      display: inline-flex; align-items: center; gap: 14px;
+      font-family: var(--mono); font-size: 14px; color: var(--bad);
+      letter-spacing: 0.1em;
+    }
+    .cut .cut-rec::before {
+      content: ''; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--bad); animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-  .quote {
-    font-size: 36px; font-weight: 500;
-    line-height: 1.3; letter-spacing: -0.01em;
-    color: var(--ink);
-    max-width: 980px;
-  }
-  .quote::before {
-    content: '"'; color: var(--brand); font-size: 80px;
-    line-height: 0; vertical-align: -20px; margin-right: 8px;
-    font-weight: 700;
-  }
+    .solution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; max-width: 980px; }
+    .pillar { padding: 28px 24px; background: var(--primary-soft); border-radius: 12px; text-align: left; }
+    .pillar-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .pillar-title { font-family: var(--display); font-size: 22px; font-weight: 500; margin-bottom: 6px; color: var(--ink); }
+    .pillar-sub { font-size: 16px; color: var(--muted); line-height: 1.4; }
 
-  .tech-row {
-    display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px;
-    max-width: 900px;
-  }
-  .tech-pill {
-    display: inline-flex; align-items: center;
-    padding: 8px 16px;
-    background: var(--surface-2); border: 1px solid var(--rule);
-    border-radius: 999px;
-    font-family: var(--font-mono); font-size: 14px;
-    color: var(--ink);
-  }
+    .mesh-stage { width: 100%; max-width: 760px; height: 380px; position: relative; margin: 32px 0; }
+    .mesh-stage svg { width: 100%; height: 100%; }
 
-  .demo-card {
-    text-align: center;
-  }
-  .demo-card h2 {
-    font-size: 72px; margin-bottom: 20px;
-  }
-  .demo-card p { margin: 0 auto; font-size: 22px; }
-  .demo-card .pulse {
-    width: 12px; height: 12px; border-radius: 50%;
-    background: #d33; margin: 24px auto 0;
-    box-shadow: 0 0 0 8px rgba(221, 51, 51, 0.15);
-    animation: pulse 1.6s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(221, 51, 51, 0.5); }
-    50%      { box-shadow: 0 0 0 18px rgba(221, 51, 51, 0); }
-  }
+    .impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1000px; margin: 40px 0; }
+    .stat { padding: 24px 20px; background: #F8F9FA; border: 1px solid var(--rule); border-radius: 12px; text-align: left; }
+    .stat-num { font-family: var(--display); font-size: 44px; font-weight: 500; line-height: 1; color: var(--primary); margin-bottom: 8px; }
+    .stat-lbl { font-size: 14px; color: var(--muted); line-height: 1.3; }
+    .sdg-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 24px; }
+    .sdg-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 10px 18px; border-radius: 999px;
+      background: var(--primary-soft); color: var(--primary);
+      font-weight: 500; font-size: 16px;
+    }
+    .sdg-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--primary); color: white;
+      font-family: var(--display); font-weight: 700; font-size: 14px;
+    }
 
-  .closer {
-    text-align: center;
-  }
-  .closer h2 { font-size: 80px; margin-bottom: 24px; }
-  .closer .urls {
-    display: inline-flex; flex-direction: column; gap: 10px;
-    padding: 24px 32px; margin-top: 32px;
-    background: var(--surface-2); border: 1px solid var(--rule);
-    border-radius: 12px;
-    font-family: var(--font-mono); font-size: 18px;
-    color: var(--brand);
-  }
+    .closing-urls {
+      margin-top: 40px;
+      display: flex; flex-direction: column; gap: 12px;
+      font-family: var(--mono); font-size: 22px; color: var(--ink);
+    }
+    .closing-urls a { color: var(--primary); text-decoration: none; font-weight: 500; }
 
-  .number-callout {
-    display: inline-block;
-    padding: 4px 12px; margin-right: 12px;
-    border-radius: 999px;
-    background: var(--brand-soft); color: var(--brand);
-    font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
-  }
-
-  /* On-screen UI */
-  #counter {
-    position: fixed; bottom: 18px; right: 22px;
-    font-family: var(--font-mono); font-size: 12px;
-    color: rgba(255,255,255,0.4); letter-spacing: 0.1em;
-    z-index: 10; user-select: none;
-  }
-  #help {
-    position: fixed; bottom: 18px; left: 22px;
-    font-family: var(--font-mono); font-size: 11px;
-    color: rgba(255,255,255,0.3); letter-spacing: 0.05em;
-    z-index: 10; user-select: none;
-  }
-
-  /* Brand mark SVG color */
-  .brand-mark { color: var(--brand); display: block; }
-  .brand-mark.giant { width: 120px; height: 120px; margin-bottom: 24px; }
-
-  .footer-line {
-    position: absolute;
-    bottom: 40px; left: 100px; right: 100px;
-    display: flex; justify-content: space-between; align-items: center;
-    color: var(--ink-faint); font-size: 14px;
-    letter-spacing: 0.04em;
-  }
-  .footer-line .brand-mark { width: 18px; height: 18px; display: inline-block; vertical-align: -3px; margin-right: 6px; }
-
-  /* Accent text */
-  .accent { color: var(--brand); }
-  .danger { color: #B53A3A; }
-  .muted-strong { color: var(--ink); }
-
-  /* Highlight box */
-  .callout {
-    background: var(--brand-soft);
-    border-left: 4px solid var(--brand);
-    padding: 24px 28px;
-    border-radius: 0 8px 8px 0;
-    margin-top: 32px;
-    max-width: 900px;
-  }
-  .callout p { font-size: 22px; color: var(--ink); margin: 0; }
-</style>
+    .notes {
+      position: fixed; right: 16px; bottom: 60px;
+      width: 380px; max-height: 70vh; overflow-y: auto;
+      background: rgba(15, 15, 15, 0.96); color: #E8EAED;
+      border-radius: 10px; padding: 18px 20px;
+      font-family: var(--sans); font-size: 13px; line-height: 1.6;
+      z-index: 20; box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      display: none;
+    }
+    .notes.shown { display: block; }
+    .notes h3 { margin: 0 0 8px; font-family: var(--display); font-size: 15px; font-weight: 500; color: white; }
+    .notes .meta { font-family: var(--mono); font-size: 11px; color: #9AA0A6; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .notes p { margin: 8px 0; }
+    .notes .cue { color: var(--warn); font-weight: 500; }
+  </style>
 </head>
 <body>
-
-<div id="stage">
-  <div id="frame">
-
-    <!-- SLIDE 1 — TITLE -->
-    <section class="slide active" data-slide="1">
-      <div class="brand-row">
-        <svg class="brand-mark" width="40" height="40" viewBox="0 0 32 32">
-          <rect x="3" y="7" width="18" height="18" rx="5" fill="currentColor"/>
-          <circle cx="22" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/>
-        </svg>
-        <div class="wordmark">offlinefirst</div>
+  <div class="deck">
+    <div class="frame">
+      <div class="chrome">
+        <span class="chrome-brand">
+          <svg width="22" height="22" viewBox="0 0 32 32">
+            <rect x="3" y="7" width="18" height="18" rx="5" fill="currentColor"/>
+            <circle cx="22" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          </svg>
+          offlinefirst
+        </span>
+        <span class="chrome-timer" id="timer">0:00 / 1:55</span>
+        <span class="chrome-counter" id="counter">1 / 8</span>
       </div>
-      <div class="eyebrow">YCS Competition 2026</div>
-      <h1>Education without internet.</h1>
-      <p class="large">A learning platform that runs entirely offline and syncs between devices over local WiFi.</p>
-      <div class="footer-line">
-        <span><svg class="brand-mark" width="18" height="18" viewBox="0 0 32 32"><rect x="3" y="7" width="18" height="18" rx="5" fill="currentColor"/><circle cx="22" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>offlinefirst</span>
-        <span>By Eshanth Penumatsa</span>
-      </div>
-    </section>
 
-    <!-- SLIDE 2 — PROBLEM -->
-    <section class="slide" data-slide="2">
-      <div class="eyebrow">The gap</div>
-      <div class="stat">2.6B</div>
-      <p class="large"><strong>2.6 billion people</strong> have no reliable internet access.</p>
-      <p class="large" style="margin-top:24px;"><strong>300 million of them are school-age children.</strong></p>
-      <div class="callout">
-        <p>Every major edtech platform assumes connectivity. The students who need education most are the ones least able to use it.</p>
-      </div>
-    </section>
+      <section class="slide center active" data-time="5">
+        <div class="title-mark">
+          <svg width="110" height="110" viewBox="0 0 32 32">
+            <rect x="3" y="7" width="18" height="18" rx="5" fill="currentColor"/>
+            <circle cx="22" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          </svg>
+        </div>
+        <div class="title-name">offlinefirst</div>
+        <div class="title-tag">Education without internet.</div>
+        <div class="title-credit">YCS 2026 · OPEN SOURCE</div>
+      </section>
 
-    <!-- SLIDE 3 — SOLUTION -->
-    <section class="slide" data-slide="3">
-      <svg class="brand-mark giant" viewBox="0 0 32 32">
-        <rect x="3" y="7" width="18" height="18" rx="5" fill="currentColor"/>
-        <circle cx="22" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/>
-      </svg>
-      <h1 style="font-size:96px;">OfflineFirst</h1>
-      <p class="large" style="max-width: 820px;">Lessons cache on each device. Quizzes save locally. Devices share content with each other over local WiFi using WebRTC, even when the internet is gone.</p>
-    </section>
+      <section class="slide center" data-time="13">
+        <div class="eyebrow">The gap</div>
+        <div class="huge">2.6B</div>
+        <div class="huge-sub">
+          people have <strong>no internet</strong>.<br/>
+          <span style="font-size: 28px; color: var(--muted);">300 million of them are students.</span>
+        </div>
+        <div class="source">SOURCE: UN ITU · UNESCO, 2024</div>
+      </section>
 
-    <!-- SLIDE 4 — HOW IT WORKS -->
-    <section class="slide" data-slide="4">
-      <div class="eyebrow">Three layers</div>
-      <h2>How it works without the internet</h2>
-      <div class="three-up">
-        <div class="pillar">
-          <div class="pillar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <section class="slide center" data-time="10">
+        <div class="eyebrow">What it is</div>
+        <div class="h1">A classroom that works<br/>without the internet.</div>
+        <div class="solution-grid">
+          <div class="pillar">
+            <div class="pillar-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </div>
+            <div class="pillar-title">Cached</div>
+            <div class="pillar-sub">PWA service worker holds the whole app on the device.</div>
           </div>
-          <h3>App shell, cached</h3>
-          <p>A service worker stores every JS, CSS, image. After the first visit, the app loads with zero network requests.</p>
-        </div>
-        <div class="pillar">
-          <div class="pillar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="16" rx="1.2"/><rect x="11" y="4" width="6" height="16" rx="1.2"/><path d="M19 4h2v16h-2z"/></svg>
+          <div class="pillar">
+            <div class="pillar-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="17" rx="2"/>
+                <polyline points="8 11 11 14 16 8"/>
+              </svg>
+            </div>
+            <div class="pillar-title">Local</div>
+            <div class="pillar-sub">Lessons and quiz scores live in IndexedDB. No network needed.</div>
           </div>
-          <h3>Lessons + scores, local</h3>
-          <p>IndexedDB stores every lesson, every quiz answer. The UI never knows whether the internet exists.</p>
-        </div>
-        <div class="pillar">
-          <div class="pillar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14 0"/><path d="M2 8.82a16 16 0 0 1 20 0"/><path d="M8.5 16.1a6 6 0 0 1 7 0"/><circle cx="12" cy="20" r="0.8" fill="currentColor"/></svg>
+          <div class="pillar">
+            <div class="pillar-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12.55a11 11 0 0 1 14 0"/>
+                <path d="M2 8.82a16 16 0 0 1 20 0"/>
+                <path d="M8.5 16.1a6 6 0 0 1 7 0"/>
+                <circle cx="12" cy="20" r="0.8" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="pillar-title">Mesh</div>
+            <div class="pillar-sub">WebRTC syncs devices on the same WiFi, peer-to-peer.</div>
           </div>
-          <h3>Devices, peer to peer</h3>
-          <p>WebRTC opens direct channels between phones over local WiFi. New lessons travel device to device, no internet hop.</p>
         </div>
+      </section>
+
+      <section class="slide center cut" data-time="3">
+        <div class="cut-text">Let's see it.</div>
+        <div class="cut-rec">REC · ROLL APP DEMO</div>
+      </section>
+
+      <section class="slide center cut" data-time="3">
+        <div class="cut-text">Now turn off the WiFi.</div>
+        <div class="cut-rec">REC · OFFLINE DEMO</div>
+      </section>
+
+      <section class="slide" data-time="14">
+        <div class="eyebrow">How the sync spreads</div>
+        <div class="h2">One teacher publishes.<br/>Every nearby device catches up in seconds.</div>
+        <div class="mesh-stage">
+          <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#1967D2" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#1967D2" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="380" cy="190" r="180" fill="url(#glow)"/>
+            <circle cx="380" cy="190" r="120" fill="none" stroke="#DADCE0" stroke-dasharray="3 5"/>
+            <circle cx="380" cy="190" r="60" fill="none" stroke="#DADCE0" stroke-dasharray="3 5"/>
+            <line x1="380" y1="190" x2="220" y2="110" stroke="#1967D2" stroke-width="1.5"/>
+            <line x1="380" y1="190" x2="540" y2="110" stroke="#1967D2" stroke-width="1.5"/>
+            <line x1="380" y1="190" x2="200" y2="240" stroke="#1967D2" stroke-width="1.5"/>
+            <line x1="380" y1="190" x2="560" y2="240" stroke="#1967D2" stroke-width="1.5"/>
+            <line x1="380" y1="190" x2="380" y2="340" stroke="#1967D2" stroke-width="1.5"/>
+            <g transform="translate(220 110)"><circle r="28" fill="white" stroke="#1967D2" stroke-width="2.5"/><text y="6" text-anchor="middle" font-family="Roboto" font-weight="700" font-size="14" fill="#1967D2">S1</text></g>
+            <g transform="translate(540 110)"><circle r="28" fill="white" stroke="#1967D2" stroke-width="2.5"/><text y="6" text-anchor="middle" font-family="Roboto" font-weight="700" font-size="14" fill="#1967D2">S2</text></g>
+            <g transform="translate(200 240)"><circle r="28" fill="white" stroke="#1967D2" stroke-width="2.5"/><text y="6" text-anchor="middle" font-family="Roboto" font-weight="700" font-size="14" fill="#1967D2">S3</text></g>
+            <g transform="translate(560 240)"><circle r="28" fill="white" stroke="#1967D2" stroke-width="2.5"/><text y="6" text-anchor="middle" font-family="Roboto" font-weight="700" font-size="14" fill="#1967D2">S4</text></g>
+            <g transform="translate(380 340)"><circle r="28" fill="white" stroke="#1967D2" stroke-width="2.5"/><text y="6" text-anchor="middle" font-family="Roboto" font-weight="700" font-size="14" fill="#1967D2">S5</text></g>
+            <circle cx="380" cy="190" r="44" fill="#1967D2"/>
+            <text x="380" y="197" text-anchor="middle" font-family="Roboto" font-weight="700" font-size="18" fill="white">TEACHER</text>
+          </svg>
+        </div>
+        <div class="body" style="margin-top: 0;">
+          Heartbeat returns peers. New devices auto-connect. When they connect, they swap peer lists. A lesson posted on one tablet propagates to every other tablet on the local WiFi <strong>within 30 seconds</strong>.
+        </div>
+      </section>
+
+      <section class="slide" data-time="11">
+        <div class="eyebrow">Reach + cost</div>
+        <div class="h2">Built on web standards.<br/>Free to ship.</div>
+        <div class="impact-grid">
+          <div class="stat"><div class="stat-num">$0</div><div class="stat-lbl">To deploy on Render's free tier</div></div>
+          <div class="stat"><div class="stat-num">$60</div><div class="stat-lbl">For a Raspberry Pi school server</div></div>
+          <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Translated UI languages</div></div>
+          <div class="stat"><div class="stat-num">0 KB</div><div class="stat-lbl">Internet needed to take a quiz after install</div></div>
+        </div>
+        <div class="sdg-row">
+          <span class="sdg-chip"><span class="sdg-num">4</span> Quality education</span>
+          <span class="sdg-chip"><span class="sdg-num">9</span> Infrastructure</span>
+          <span class="sdg-chip"><span class="sdg-num">10</span> Reduced inequalities</span>
+        </div>
+      </section>
+
+      <section class="slide center" data-time="6">
+        <div class="title-mark">
+          <svg width="80" height="80" viewBox="0 0 32 32">
+            <rect x="3" y="7" width="18" height="18" rx="5" fill="currentColor"/>
+            <circle cx="22" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          </svg>
+        </div>
+        <div class="h1" style="font-size: 56px;">Try it.</div>
+        <div class="closing-urls">
+          <a href="https://offlinefirst.onrender.com">offlinefirst.onrender.com</a>
+          <a href="https://github.com/EshanthPen/offlinefirst">github.com/EshanthPen/offlinefirst</a>
+        </div>
+      </section>
+
+      <div class="progress"><div id="progress-fill"></div></div>
+      <div class="hint">
+        <span>← / → navigate · F fullscreen · N notes · R reset timer · 1-9 jump</span>
+        <span>OfflineFirst pitch deck</span>
       </div>
-    </section>
-
-    <!-- SLIDE 5 — DEMO TRANSITION -->
-    <section class="slide demo-card" data-slide="5">
-      <div class="eyebrow accent">Let's see it</div>
-      <h2>Live demo</h2>
-      <p>Onboarding. Lesson reader. Offline quiz. Live sync.</p>
-      <div class="pulse"></div>
-    </section>
-
-    <!-- SLIDE 6 — A DAY IN A REAL SCHOOL -->
-    <section class="slide" data-slide="6">
-      <div class="eyebrow">The scenario</div>
-      <h2>A school day with intermittent internet</h2>
-      <div class="timeline">
-        <div class="step">
-          <div class="step-time">8:00 AM</div>
-          <div class="step-text">Teacher visits café with WiFi. Tablet downloads new lessons. <em>Uploads yesterday's quiz scores.</em></div>
-        </div>
-        <div class="step">
-          <div class="step-time">9:05 AM</div>
-          <div class="step-text">Students open the app at school. No internet. <em>The cached app loads. Sample lessons appear instantly.</em></div>
-        </div>
-        <div class="step">
-          <div class="step-time">9:10 AM</div>
-          <div class="step-text">Students near the teacher tablet sync over local WiFi. <em>Today's new content arrives in seconds.</em></div>
-        </div>
-        <div class="step">
-          <div class="step-time">9:30 AM</div>
-          <div class="step-text">Students take a quiz. Scores save locally. <em>Result screen shows immediately. No spinner.</em></div>
-        </div>
-        <div class="step">
-          <div class="step-time">4:00 PM</div>
-          <div class="step-text">Teacher returns to WiFi. Class scores upload to the server. <em>Dashboard updates for parents and admins.</em></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 7 — FEATURES -->
-    <section class="slide" data-slide="7">
-      <div class="eyebrow">What's built</div>
-      <h2>One app, every role, every language</h2>
-      <div class="three-up">
-        <div class="pillar">
-          <h3 style="color:var(--brand);">Student</h3>
-          <p>Read lessons with audio playback. Take quizzes offline. Track progress per subject. Larger-text mode for low vision.</p>
-        </div>
-        <div class="pillar">
-          <h3 style="color:var(--subj-science);">Teacher</h3>
-          <p>Author lessons in a Notion-style editor. Import CSV or JSON. Monitor the live mesh. Export PDF reports.</p>
-        </div>
-        <div class="pillar">
-          <h3 style="color:var(--subj-literacy);">Universal</h3>
-          <p>Four languages: English, Spanish, French, Swahili. Light and dark themes. Installs as a native app on phones.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 8 — IMPACT (SDGs) -->
-    <section class="slide" data-slide="8">
-      <div class="eyebrow">Why it matters</div>
-      <h2>Three UN Sustainable Development Goals</h2>
-      <div class="sdgs">
-        <div class="sdg s4">
-          <div class="sdg-num">04</div>
-          <div class="sdg-name">Quality Education</div>
-          <div class="sdg-desc">A real curriculum reaches students in zero-connectivity classrooms.</div>
-        </div>
-        <div class="sdg s9">
-          <div class="sdg-num">09</div>
-          <div class="sdg-name">Infrastructure</div>
-          <div class="sdg-desc">A mesh of phones is the infrastructure. No towers, no fiber, no data plans.</div>
-        </div>
-        <div class="sdg s10">
-          <div class="sdg-num">10</div>
-          <div class="sdg-name">Reduced Inequalities</div>
-          <div class="sdg-desc">Built for the 2.7 billion people that mainstream edtech excludes by design.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 9 — FEASIBILITY -->
-    <section class="slide" data-slide="9">
-      <div class="eyebrow">Why this scales</div>
-      <h2>Web standards. Zero cost to deploy.</h2>
-      <p class="large">No app store. No custom OS. No proprietary hardware. Any device with a browser made in the last five years can run it. Any organization can self-host it on a $5 server, or a $60 Raspberry Pi at the school for true zero-internet operation.</p>
-      <div class="tech-row">
-        <span class="tech-pill">React 18</span>
-        <span class="tech-pill">Vite + PWA</span>
-        <span class="tech-pill">IndexedDB</span>
-        <span class="tech-pill">Service Worker</span>
-        <span class="tech-pill">WebRTC (PeerJS)</span>
-        <span class="tech-pill">Node.js + Express</span>
-        <span class="tech-pill">SQLite</span>
-        <span class="tech-pill">Inter + JetBrains Mono</span>
-      </div>
-    </section>
-
-    <!-- SLIDE 10 — CLOSER -->
-    <section class="slide closer" data-slide="10">
-      <svg class="brand-mark giant" viewBox="0 0 32 32" style="margin: 0 auto 24px;">
-        <rect x="3" y="7" width="18" height="18" rx="5" fill="currentColor"/>
-        <circle cx="22" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/>
-      </svg>
-      <h2>Education shouldn't depend on the network.</h2>
-      <p class="large" style="margin: 0 auto;">Built in a week. Live now. Free to deploy.</p>
-      <div class="urls">
-        <span>github.com/EshanthPen/offlinefirst</span>
-        <span>offlinefirst-xxxx.onrender.com</span>
-      </div>
-    </section>
-
+    </div>
   </div>
-</div>
 
-<div id="counter">1 / 10</div>
-<div id="help">← → arrow keys · F fullscreen · 1-9 jump · P presenter mode</div>
+  <div class="notes" id="notes"></div>
 
-<script>
-  const slides = document.querySelectorAll('.slide');
-  const counter = document.getElementById('counter');
-  let i = 0;
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('counter');
+    const timer = document.getElementById('timer');
+    const fill = document.getElementById('progress-fill');
+    const notesEl = document.getElementById('notes');
+    const TARGET_SECONDS = 115;
 
-  function show(n) {
-    if (n < 0 || n >= slides.length) return;
-    slides[i].classList.remove('active');
-    i = n;
-    slides[i].classList.add('active');
-    counter.textContent = `${i + 1} / ${slides.length}`;
-    location.hash = '#' + (i + 1);
-  }
+    const NOTES = [
+      {
+        title: 'Title',
+        say: 'Silent. Three beats of music. Logo lands.',
+        cue: 'Hold for 3 seconds before pressing →. No talking yet.'
+      },
+      {
+        title: 'The problem',
+        say: '"Two-point-six billion people have no internet. Three hundred million of them are students."',
+        cue: 'Pause after "no internet". Let the number sit on screen.'
+      },
+      {
+        title: 'The solution',
+        say: '"OfflineFirst is a classroom that works without the internet. Three pieces of standard web tech: the app caches itself, lessons live in the browser database, devices on the same WiFi share over WebRTC."',
+        cue: 'Don\'t overexplain. The demo is the proof. ~10 seconds.'
+      },
+      {
+        title: 'CUT to app — demo 1 (30s of screen recording)',
+        say: '"Watch a student set up the app, open a lesson, and take a quiz."',
+        cue: 'SWITCH to screen recording.\n  1. Onboarding (welcome → student → name "Aminata" → grade)\n  2. Click Mathematics in sidebar\n  3. Open Introduction to Fractions\n  4. Scroll lesson · tap one Listen button\n  5. Click Start quiz → answer 2 questions → see result\nSWITCH back to deck.'
+      },
+      {
+        title: 'CUT to app — offline demo (25s, MONEY SHOT)',
+        say: '"Now I turn the internet completely off. The app still works. I take a quiz. When I come back online, the score appears on the teacher\'s dashboard."',
+        cue: 'SWITCH to screen recording.\n  1. DevTools → Network → check Offline (show the throttling badge)\n  2. Reload the page → app still loads\n  3. Take any quiz, finish it, see the green score hero\n  4. DevTools → uncheck Offline\n  5. Wait 5s, switch to Teacher view (Settings → restart, or onboard as teacher in another tab)\n  6. Show the new score in Results\nDo not rush. This is the proof.'
+      },
+      {
+        title: 'How the sync spreads',
+        say: '"When one teacher publishes a lesson, the server tells every other active device about it. They swap peer lists. New lessons reach every tablet on the local WiFi within thirty seconds."',
+        cue: 'Pause on the diagram. Hands off keyboard while you talk.'
+      },
+      {
+        title: 'Reach + cost',
+        say: '"Zero dollars to deploy on Render\'s free tier. Sixty dollars for a Raspberry Pi at a school. Four translated UI languages. Zero kilobytes of internet needed to take a quiz after first install. Three UN Sustainable Development Goals."',
+        cue: 'Speak each number deliberately. Land on the SDGs.'
+      },
+      {
+        title: 'Closing',
+        say: '"Live at offlinefirst-dot-onrender-dot-com. Open source. Built for the Young Coders Sphere competition."',
+        cue: 'Hold for 3 seconds after speaking. Let the URL be readable.'
+      }
+    ];
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-      e.preventDefault();
-      if (i < slides.length - 1) show(i + 1);
-    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-      e.preventDefault();
-      if (i > 0) show(i - 1);
-    } else if (e.key === 'Home') {
-      show(0);
-    } else if (e.key === 'End') {
-      show(slides.length - 1);
-    } else if (e.key === 'f' || e.key === 'F') {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-      else document.exitFullscreen();
-    } else if (/^[1-9]$/.test(e.key)) {
-      show(Math.min(slides.length - 1, parseInt(e.key, 10) - 1));
-    } else if (e.key === 'p' || e.key === 'P') {
-      // Toggle bottom indicators for presenter screen recording
-      counter.style.display = counter.style.display === 'none' ? 'block' : 'none';
-      document.getElementById('help').style.display = counter.style.display;
+    let cur = 0;
+    let startedAt = null;
+    let interval = null;
+
+    function show(i) {
+      cur = Math.max(0, Math.min(slides.length - 1, i));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === cur));
+      counter.textContent = `${cur + 1} / ${slides.length}`;
+      const n = NOTES[cur];
+      notesEl.innerHTML = `
+        <div class="meta">SLIDE ${cur + 1} · ${slides[cur].dataset.time}s</div>
+        <h3>${n.title}</h3>
+        <p>${n.say}</p>
+        <p class="cue">${n.cue.replace(/\n/g, '<br/>')}</p>
+      `;
+      if (!startedAt) start();
     }
-  });
 
-  // Click right side of stage to advance, left side to go back
-  document.getElementById('stage').addEventListener('click', (e) => {
-    const rect = document.getElementById('frame').getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    if (x > rect.width / 2 && i < slides.length - 1) show(i + 1);
-    else if (x <= rect.width / 2 && i > 0) show(i - 1);
-  });
+    function start() {
+      startedAt = Date.now();
+      interval = setInterval(updateTimer, 200);
+    }
+    function reset() {
+      startedAt = Date.now();
+      timer.classList.remove('warn', 'over');
+      updateTimer();
+    }
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      const m = Math.floor(elapsed / 60);
+      const s = elapsed % 60;
+      const tm = Math.floor(TARGET_SECONDS / 60);
+      const ts = TARGET_SECONDS % 60;
+      timer.textContent = `${m}:${String(s).padStart(2, '0')} / ${tm}:${String(ts).padStart(2, '0')}`;
+      timer.classList.toggle('warn', elapsed > TARGET_SECONDS * 0.85 && elapsed <= TARGET_SECONDS);
+      timer.classList.toggle('over', elapsed > TARGET_SECONDS);
+      const pct = Math.min(100, (elapsed / TARGET_SECONDS) * 100);
+      fill.style.width = pct + '%';
+    }
 
-  // Hash-based deep linking (e.g. open at slide 4 with #4)
-  const startAt = parseInt(location.hash.replace('#', ''), 10);
-  if (startAt > 0 && startAt <= slides.length) show(startAt - 1);
-</script>
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(cur + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(cur - 1); }
+      else if (e.key === 'Home') show(0);
+      else if (e.key === 'End') show(slides.length - 1);
+      else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+      else if (e.key === 'n' || e.key === 'N') notesEl.classList.toggle('shown');
+      else if (e.key === 'r' || e.key === 'R') reset();
+      else if (e.key >= '1' && e.key <= '9') show(parseInt(e.key) - 1);
+    });
 
+    show(0);
+  </script>
 </body>
 </html>
