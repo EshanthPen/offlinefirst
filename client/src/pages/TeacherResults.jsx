@@ -87,8 +87,8 @@ export default function TeacherResults() {
     <div className="lms-page">
       <div className="lms-page-head-row">
         <div>
-          <h1 className="lms-page-title">Quiz results</h1>
-          <p className="lms-page-sub">Every attempt across the mesh, in one place.</p>
+          <h1 className="lms-page-title">Results</h1>
+          <p className="lms-page-sub">All quiz attempts.</p>
         </div>
         <button type="button" className="lms-pill-btn outline" onClick={exportPDF} disabled={filtered.length === 0}>
           <Icon name="download" size={14} /> Export PDF
@@ -151,7 +151,7 @@ export default function TeacherResults() {
       <div className="lms-card">
         {filtered.length === 0 ? (
           <div style={{ padding: 24 }}>
-            <EmptyState title="No attempts yet" sub="As students take quizzes, results land here in real time." />
+            <EmptyState title="No attempts yet" sub="Scores show up after students take quizzes." />
           </div>
         ) : (
           <table className="lms-table">

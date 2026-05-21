@@ -122,11 +122,11 @@ export default function LessonReader() {
       <div className="lms-lesson-cta">
         <FileGlyph type="quiz" size={36} />
         <div style={{ flex: 1 }}>
-          <div className="lms-cta-title">{completed ? 'Retake the quiz' : 'Ready for the quiz?'}</div>
+          <div className="lms-cta-title">{completed ? 'Take it again' : 'Quiz time'}</div>
           <div className="lms-cta-sub">
             {completed
-              ? 'Try again to improve your score. It saves locally.'
-              : `${lesson.quiz?.questions?.length || 3} short questions. Unlimited attempts.`}
+              ? 'Try again to beat your score.'
+              : `${lesson.quiz?.questions?.length || 3} questions. Unlimited tries.`}
           </div>
         </div>
         <button type="button" className="lms-pill-btn solid" onClick={() => navigate(`/quiz/${id}`)}>

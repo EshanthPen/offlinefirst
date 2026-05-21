@@ -58,7 +58,7 @@ export default function TeacherContent() {
         body: JSON.stringify(draft)
       });
       if (res.ok) {
-        flash(editing ? 'Lesson saved' : 'Lesson created and shared over the mesh');
+        flash(editing ? 'Saved' : 'Created');
         await load();
         cancel();
         triggerSync();
@@ -102,8 +102,8 @@ export default function TeacherContent() {
     <div className="lms-page">
       <div className="lms-page-head-row">
         <div>
-          <h1 className="lms-page-title">Content library</h1>
-          <p className="lms-page-sub">Author lessons and quizzes. Changes sync to nearby devices over the mesh.</p>
+          <h1 className="lms-page-title">Content</h1>
+          <p className="lms-page-sub">Lessons and quizzes. Edits sync to nearby devices.</p>
         </div>
         {!isEditing && (
           <button type="button" className="lms-pill-btn solid" onClick={startCreate}>
@@ -216,7 +216,7 @@ export default function TeacherContent() {
                 <span>
                   <strong>Publish to students</strong>
                   <span style={{ display: 'block', fontSize: 12, color: 'var(--lms-ink-muted)' }}>
-                    When published, this lesson syncs to any device in range.
+                    Off = draft, only visible to you.
                   </span>
                 </span>
               </label>
@@ -227,7 +227,7 @@ export default function TeacherContent() {
         <div className="lms-card">
           {lessons.length === 0 ? (
             <div style={{ padding: 24 }}>
-              <EmptyState title="No lessons yet" sub="Create your first lesson to share it across the mesh." action="New lesson" onAction={startCreate} />
+              <EmptyState title="No lessons" sub="Make one to share it with nearby devices." action="New lesson" onAction={startCreate} />
             </div>
           ) : (
             lessons.map((l, i, arr) => {

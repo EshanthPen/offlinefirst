@@ -19,7 +19,7 @@ function Classwork({ course }) {
     },
     {
       type: 'quiz',
-      name: `${course.title} — Quiz`,
+      name: `${course.title}: Quiz`,
       sub: `${course.quiz?.questions?.length || 0} questions`,
       lesson_id: course.id
     }
@@ -48,7 +48,7 @@ function CourseGrades({ course, scores }) {
       </div>
       {courseScores.length === 0 ? (
         <div style={{ padding: 24 }}>
-          <EmptyState title="No grades yet" sub="When you complete a quiz, your score lands here." />
+          <EmptyState title="No grades yet" sub="Scores show up after you take a quiz." />
         </div>
       ) : (
         <table className="lms-table">
@@ -121,14 +121,14 @@ export default function CourseDetail() {
         <div className="lms-two-col" style={{ marginTop: 24 }}>
           <div className="lms-main-col">
             {coursePosts.length === 0 ? (
-              <EmptyState title="Nothing in the stream yet" sub="When your teacher posts a lesson or quiz, it shows up here." />
+              <EmptyState title="Nothing here" sub="New posts show up here." />
             ) : coursePosts.map(p => <ActivityPost key={p.id} post={p} />)}
           </div>
           <aside className="lms-side-col">
             <div className="lms-rail-card">
               <h3 className="lms-rail-card-title" style={{ marginBottom: 8 }}>Upcoming</h3>
               {courseTodo.upcoming.length === 0 && courseTodo.overdue.length === 0 ? (
-                <div className="lms-rail-empty">No work due soon.</div>
+                <div className="lms-rail-empty">Nothing due.</div>
               ) : (
                 <>
                   {[...courseTodo.overdue, ...courseTodo.upcoming].map(t => (

@@ -67,7 +67,7 @@ export function ToDoCard({ todo, onOpenAll }) {
         </div>
       )}
       {overdueCount === 0 && upcomingCount === 0 && (
-        <div className="lms-rail-empty">No work due. Nice.</div>
+        <div className="lms-rail-empty">Nothing due.</div>
       )}
     </div>
   );
@@ -102,19 +102,19 @@ export function UpcomingCard({ events }) {
   );
 }
 
-export function RecentlyCompletedCard({ items, expanded, onExpand }) {
+export function RecentlyCompletedCard({ items }) {
+  if (items.length === 0) {
+    return (
+      <div className="lms-rail-card">
+        <h3 className="lms-rail-card-title" style={{ marginBottom: 8 }}>Recently completed</h3>
+        <div className="lms-rail-empty">Nothing yet.</div>
+      </div>
+    );
+  }
   return (
     <div className="lms-rail-card">
       <h3 className="lms-rail-card-title" style={{ marginBottom: 8 }}>Recently completed</h3>
-      {!expanded && (
-        <>
-          <div className="lms-rail-empty" style={{ marginBottom: 8 }}>Collapsed by default.</div>
-          <button type="button" className="lms-text-btn" onClick={onExpand}>
-            <Icon name="refresh" size={14} /> Load recently completed
-          </button>
-        </>
-      )}
-      {expanded && items.map((it, i) => (
+      {items.map((it, i) => (
         <div key={i} className="lms-rail-item static">
           <Icon name="check-circle" size={18} color="var(--lms-ok)" />
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -123,9 +123,6 @@ export function RecentlyCompletedCard({ items, expanded, onExpand }) {
           </div>
         </div>
       ))}
-      {expanded && items.length === 0 && (
-        <div className="lms-rail-empty">No completed quizzes yet.</div>
-      )}
     </div>
   );
 }

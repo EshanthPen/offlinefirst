@@ -11,11 +11,11 @@ export default function CalendarPage() {
   return (
     <div className="lms-page">
       <h1 className="lms-page-title">Calendar</h1>
-      <p className="lms-page-sub">Upcoming quizzes from all your courses.</p>
+      <p className="lms-page-sub">Upcoming quizzes.</p>
       <div className="lms-card">
         {events.length === 0 ? (
           <div style={{ padding: 32 }}>
-            <EmptyState title="Nothing scheduled" sub="Quizzes from your courses will appear here." />
+            <EmptyState title="Nothing scheduled" sub="Quizzes show up here." />
           </div>
         ) : events.map((day, i) => (
           <div key={i} className="lms-cal-day">

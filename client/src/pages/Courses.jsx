@@ -13,9 +13,9 @@ export default function Courses() {
   return (
     <div className="lms-page">
       <h1 className="lms-page-title">Enrolled</h1>
-      <p className="lms-page-sub">Every class on this device.</p>
+      <p className="lms-page-sub">Classes on this device.</p>
       {lessons.length === 0 ? (
-        <EmptyState title="No classes yet" sub="Lessons sync to this device when a teacher publishes them." />
+        <EmptyState title="No classes" sub="Lessons show up after a teacher publishes them." />
       ) : (
         <div className="lms-course-grid">
           {lessons.map(l => (

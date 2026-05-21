@@ -21,7 +21,7 @@ function SignIn({ onContinue }) {
       <div className="lms-auth-card">
         <h1 className="lms-auth-title">Welcome</h1>
         <p className="lms-auth-sub">
-          Set up this device in about a minute. Everything stays local. No account needed.
+          About a minute to set up. No account.
         </p>
 
         <button
@@ -34,7 +34,7 @@ function SignIn({ onContinue }) {
         </button>
 
         <div className="lms-auth-foot">
-          Lessons sync between nearby devices over local WiFi.
+          Saves to this device. Syncs to nearby devices over WiFi.
         </div>
       </div>
     </div>
@@ -109,7 +109,7 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
         {step === 0 && (
           <>
             <h1 className="lms-auth-title">Who's using this device?</h1>
-            <p className="lms-auth-sub">You can switch later from the sidebar.</p>
+            <p className="lms-auth-sub">You can change this later in Settings.</p>
             <div className="lms-role-grid">
               <button
                 type="button"
@@ -119,8 +119,8 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
                 <span className="lms-role-icon" style={{ background: '#E8F0FE', color: '#1967D2' }}>
                   <Icon name="graduation" size={28} />
                 </span>
-                <div className="lms-role-title">I'm a student</div>
-                <div className="lms-role-sub">Read lessons, take quizzes, track your progress.</div>
+                <div className="lms-role-title">Student</div>
+                <div className="lms-role-sub">Read lessons and take quizzes.</div>
                 {role === 'student' && (
                   <Icon name="check-circle" size={20} color="#1967D2" style={{ position: 'absolute', top: 14, right: 14 }} />
                 )}
@@ -133,8 +133,8 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
                 <span className="lms-role-icon" style={{ background: '#E6F4EA', color: '#1E8E3E' }}>
                   <Icon name="teacher" size={28} />
                 </span>
-                <div className="lms-role-title">I'm a teacher</div>
-                <div className="lms-role-sub">Author lessons, share via the local mesh, review results.</div>
+                <div className="lms-role-title">Teacher</div>
+                <div className="lms-role-sub">Write lessons and see student scores.</div>
                 {role === 'teacher' && (
                   <Icon name="check-circle" size={20} color="#1E8E3E" style={{ position: 'absolute', top: 14, right: 14 }} />
                 )}
@@ -146,12 +146,12 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
         {step === 1 && (
           <>
             <h1 className="lms-auth-title">
-              {role === 'teacher' ? 'About your classroom' : 'About you'}
+              {role === 'teacher' ? 'About you' : 'About you'}
             </h1>
             <p className="lms-auth-sub">
               {role === 'teacher'
-                ? 'Students will see your display name and the subjects you teach.'
-                : 'OfflineFirst will greet you and recommend lessons at your level.'}
+                ? 'Students see this name on lessons you share.'
+                : 'Used to greet you and pick lessons for your level.'}
             </p>
 
             <label className="lms-field-label">{role === 'teacher' ? 'Display name' : 'Your name'}</label>
@@ -227,12 +227,10 @@ function OnboardingFlow({ onComplete, onBack, initialLang = 'en' }) {
               <Icon name="check" size={36} strokeWidth={2.5} color="white" />
             </div>
             <h1 className="lms-auth-title" style={{ textAlign: 'center' }}>
-              Welcome, {name.split(' ')[0] || 'friend'}.
+              All set, {name.split(' ')[0] || 'friend'}.
             </h1>
             <p className="lms-auth-sub" style={{ textAlign: 'center' }}>
-              {role === 'teacher'
-                ? 'Your console is ready. Start authoring or share existing lessons over the mesh.'
-                : 'Your sample lessons are cached and ready, online or offline.'}
+              {role === 'teacher' ? 'Your console is ready.' : 'Sample lessons are ready.'}
             </p>
             <div className="lms-onb-summary">
               <div className="lms-onb-summary-row">

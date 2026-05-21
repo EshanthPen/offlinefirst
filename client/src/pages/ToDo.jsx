@@ -18,9 +18,9 @@ export default function ToDoPage() {
   return (
     <div className="lms-page">
       <h1 className="lms-page-title">To-do</h1>
-      <p className="lms-page-sub">Every quiz assigned to you.</p>
+      <p className="lms-page-sub">Quizzes to take.</p>
       {all.length === 0 ? (
-        <EmptyState title="No quizzes assigned" sub="Quizzes appear here when a teacher publishes one." />
+        <EmptyState title="Nothing to do" sub="Quizzes show up after a teacher posts one." />
       ) : (
         <div className="lms-card">
           <div className="lms-list-head">

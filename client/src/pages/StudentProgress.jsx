@@ -33,7 +33,7 @@ export default function StudentProgress() {
   return (
     <div className="lms-page">
       <h1 className="lms-page-title">Grades</h1>
-      <p className="lms-page-sub">A snapshot of your recent work. Everything is stored on this device.</p>
+      <p className="lms-page-sub">Your work, kept on this device.</p>
 
       <div className="lms-stat-grid">
         <Stat label="Completion" value={`${total ? Math.round((done / total) * 100) : 0}%`} />

@@ -95,4 +95,4 @@ On first launch the app shows an 8-step wizard that captures: role (student or t
 - **SDG 10**: Targets the exact population excluded from mainstream edtech, the 2.7 billion without internet.
 
 ## Tech stack
-React, Vite, Tailwind, Node.js, Express, SQLite, PeerJS (WebRTC), IndexedDB, PWA Service Worker.
+React, Vite, Node.js, Express, SQLite, PeerJS (WebRTC), IndexedDB, PWA Service Worker.

@@ -61,7 +61,7 @@ export function buildTodo(lessons, scores) {
         id: 'u_' + l.id,
         course: l.subject,
         course_color: meta.letterColor,
-        title: `${l.title} — Quiz`,
+        title: `${l.title}: Quiz`,
         due: 'Anytime',
         lesson_id: l.id
       };
@@ -88,7 +88,7 @@ export function buildRecent(lessons, scores) {
       const l = lessons.find(x => x.id === s.lesson_id);
       return {
         course: l?.subject || s.lesson_id,
-        title: (l?.title || 'Quiz') + ' — Quiz',
+        title: (l?.title || 'Quiz') + ': Quiz',
         when: new Date(s.completed_at).toLocaleDateString(),
         score: `${s.score}/${s.total}`
       };

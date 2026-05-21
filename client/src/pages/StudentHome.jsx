@@ -17,7 +17,7 @@ function AssignmentList({ todo }) {
     ...todo.upcoming.map(x => ({ ...x, status: 'upcoming' }))
   ];
   if (all.length === 0) {
-    return <EmptyState title="No quizzes assigned" sub="Quizzes appear here when a teacher publishes one." />;
+    return <EmptyState title="Nothing assigned" sub="Quizzes show up after a teacher posts one." />;
   }
   return (
     <div className="lms-card">
@@ -61,7 +61,7 @@ function InlineEnrolled({ lessons, scores }) {
     return acc;
   }, {});
   if (lessons.length === 0) {
-    return <EmptyState title="No classes yet" sub="Lessons sync to this device when a teacher publishes them." />;
+    return <EmptyState title="No classes" sub="Lessons show up after a teacher publishes them." />;
   }
   return (
     <div className="lms-course-grid">
@@ -74,7 +74,6 @@ function InlineEnrolled({ lessons, scores }) {
 
 export default function StudentHome() {
   const [tab, setTab] = useState('activity');
-  const [recentExpanded, setRecentExpanded] = useState(false);
   const { lessons, scores } = useAppData();
 
   const posts = useMemo(() => buildPosts(lessons), [lessons]);
@@ -104,10 +103,7 @@ export default function StudentHome() {
               </div>
               <div className="lms-feed">
                 {posts.length === 0 ? (
-                  <EmptyState
-                    title="Nothing here yet"
-                    sub="Posts appear when your teacher publishes a lesson or quiz."
-                  />
+                  <EmptyState title="Nothing yet" sub="Posts show up here when a teacher publishes work." />
                 ) : posts.map(p => <ActivityPost key={p.id} post={p} />)}
               </div>
             </>
@@ -118,7 +114,7 @@ export default function StudentHome() {
         <aside className="lms-side-col">
           <ToDoCard todo={todo} onOpenAll={() => setTab('assigned')} />
           <UpcomingCard events={events} />
-          <RecentlyCompletedCard items={recent} expanded={recentExpanded} onExpand={() => setRecentExpanded(true)} />
+          <RecentlyCompletedCard items={recent} />
         </aside>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon';
 import Avatar from '../components/Avatar';
-import { useT, LANGUAGES as APP_LANGUAGES } from '../i18n';
+import { useT } from '../i18n';
 import { useTheme } from '../theme';
 import { LMS_LANGUAGES } from '../data/languages';
 import { fetchAuthStatus, isLoggedIn, clearToken, authedFetch } from '../auth';

@@ -77,9 +77,9 @@ export default function TeacherDashboard() {
     <div className="lms-page">
       <div className="lms-page-head-row">
         <div>
-          <h1 className="lms-page-title">Network dashboard</h1>
+          <h1 className="lms-page-title">Dashboard</h1>
           <p className="lms-page-sub">
-            Welcome back, {(profile.studentName || 'Teacher').split(' ')[0]}. Your local mesh is live.
+            Welcome back, {(profile.studentName || 'Teacher').split(' ')[0]}.
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -105,7 +105,7 @@ export default function TeacherDashboard() {
       <h2 className="lms-section-title" style={{ marginTop: 32, marginBottom: 12 }}>Connected devices</h2>
       {devices.length === 0 ? (
         <div className="lms-card" style={{ padding: 32, textAlign: 'center', color: 'var(--lms-ink-muted)' }}>
-          No devices connected yet. Students appear here as they sync.
+          No devices yet.
         </div>
       ) : (
         <div className="lms-device-grid">
@@ -121,7 +121,7 @@ export default function TeacherDashboard() {
       </div>
       {results.length === 0 ? (
         <div className="lms-card" style={{ padding: 32, textAlign: 'center', color: 'var(--lms-ink-muted)' }}>
-          No quiz attempts yet.
+          No attempts yet.
         </div>
       ) : (
         <div className="lms-card">

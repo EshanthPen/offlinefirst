@@ -30,7 +30,7 @@ export default function LanguageModal({ lang, onPick, onClose }) {
       <div className="lms-modal lms-lang-modal" onClick={e => e.stopPropagation()}>
         <div className="lms-modal-head">
           <h2 style={{ margin: 0, fontFamily: 'var(--lms-font-display)', fontSize: 20, fontWeight: 500 }}>
-            Pick your language
+            Language
           </h2>
           <button className="lms-iconbtn" type="button" onClick={onClose} title="Close">
             <Icon name="x" size={18} />
@@ -39,7 +39,7 @@ export default function LanguageModal({ lang, onPick, onClose }) {
         <div className="lms-modal-search">
           <Icon name="search" size={16} color="var(--lms-ink-muted)" />
           <input
-            placeholder="Search by name, native, or region…"
+            placeholder="Search"
             value={query}
             onChange={e => setQuery(e.target.value)}
             autoFocus
@@ -77,7 +77,7 @@ export default function LanguageModal({ lang, onPick, onClose }) {
         </div>
         <div className="lms-modal-foot">
           <span style={{ fontSize: 12, color: 'var(--lms-ink-faint)' }}>
-            {LMS_LANGUAGES.length} languages available. Translations roll out over the mesh.
+            {LMS_LANGUAGES.length} languages
           </span>
         </div>
       </div>
